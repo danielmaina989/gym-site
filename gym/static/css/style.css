@@ -144,6 +144,130 @@
   padding-left: 15px;
   text-align: left;
 }
+/* ---------------------Services-------------- */
+.service-card {
+    transition: transform 0.3s, box-shadow 0.3s;
+    overflow: hidden;
+    position: relative;
+}
+
+.service-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Image styling */
+.service-card img {
+    object-fit: cover;
+    height: 200px;
+    width: 100%;
+    transition: transform 0.3s;
+}
+
+.service-card:hover img {
+    transform: scale(1.1);
+}
+
+/* Title and description styling */
+.service-title {
+    font-size: 1.25rem;
+    margin: 0.5rem 0;
+    transition: font-weight 0.3s;
+}
+
+.service-description {
+    font-size: 0.9rem;
+    color: #555;
+}
+
+.service-card:hover .service-title {
+    font-weight: bold;
+}
+
+/* Button visibility */
+.service-link {
+    display: none;
+    margin-top: 0.5rem;
+}
+
+.service-card:hover .service-link {
+    display: inline-block;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .service-card img {
+        height: 150px;
+    }
+    .service-title {
+        font-size: 1rem;
+    }
+}
+
+/* ----------faq----------- */
+.faq-question {
+    margin-bottom: 10px;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 5px;
+}
+
+.faq-answer {
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border-left: 4px solid #007bff;
+    border-radius: 4px;
+}
+
+.faq-question:hover {
+    color: #007bff;
+    text-decoration: underline;
+}
+
+img.rounded {
+    border: 2px solid #007bff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+
+/* ---------Coaches--------- */
+ 
+.coach-card {
+    position: relative;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.coach-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.coach-title,
+.coach-description,
+.coach-pay {
+    color: blue;
+}
+
+.coach-link {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.coach-card:hover .coach-link {
+    opacity: 1;
+}
+
+.coach-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    transition: opacity 0.3s ease;
+}
+
 /* ---------------------Testimonials----------- */
 #testimonials {
   padding-top: 100px;

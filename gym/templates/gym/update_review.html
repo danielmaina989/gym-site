@@ -1,0 +1,16 @@
+<!-- templates/gym/update_review.html -->
+{% extends 'base.html' %}
+
+{% block title %}Update Review - Dantey's Fitness Center{% endblock %}
+
+{% block main_content %}
+<div class="container my-5">
+    <h2>Update Your Review</h2>
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Update Review</button>
+        <a href="{% url 'gym:reviews' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}

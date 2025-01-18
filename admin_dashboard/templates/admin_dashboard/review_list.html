@@ -1,0 +1,30 @@
+<!-- templates/admin/review_list.html -->
+{% extends 'admin/base_site.html' %}
+
+{% block content %}
+  <h1>Review List</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>Product</th>
+        <th>Rating</th>
+        <th>Content</th>
+        <th>Created At</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for review in reviews %}
+        <tr>
+          <td>{{ review.product.name }}</td>
+          <td>{{ review.rating }}</td>
+          <td>{{ review.content }}</td>
+          <td>{{ review.created_at }}</td>
+        </tr>
+      {% empty %}
+        <tr>
+          <td colspan="4">No reviews available</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

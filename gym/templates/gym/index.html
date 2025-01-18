@@ -2,59 +2,206 @@
 
 {% block title %}Home - Dantey's Fitness Center{% endblock %}
 
-{% block content %}
+{% block main_content %}
 <section id="welcome">
     <div class="container">
         <div class="welcome text-center wow slideInLeft delay-2s">
-            <h1>Create Website with Animation</h1>
-            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Deleniti dolore delectus sunt nulla pariatur, quisquam repellendus repudiandae beatae?</p>
-            <button type="submit" class="btn home-btn">Subscribe</button>
+            <h1>"Transform Your Body, Transform Your Life!" 🏋️‍♂️ 💪</h1>
+            <p>Our mission is to guide individuals on their fitness journey by offering expert support, innovative training methods, and an unwavering commitment to personal transformation.</p>
+            <p>Our vision is to be the go-to fitness hub for life-changing results, where members discover their potential and achieve their best selves.</p>
+            <button type="submit" class="btn home-btn">Start Your Free Trial Today</button>
         </div>
     </div>
 </section>
-
-<section id="about">
+<!-- about -->
+<section id="about" class="my-5">
     <div class="container">
         <div class="row">
-            <!-- Content from "About Us" section -->
-        </div>
-    </div>
-</section>
-
-<section id="services">
-    <div class="container">
-        <div class="row">
-            <!-- Content from "Services" section -->
-        </div>
-    </div>
-</section>
-
-<section id="features">
-    <div class="container">
-        <div class="row">
-            <!-- Content from "Features" section -->
-        </div>
-    </div>
-</section>
-
-<section id="testimonials">
-    <div class="container">
-        <!-- Content from "Testimonials" section -->
-    </div>
-</section>
-
-<section id="subscribe">
-    <div class="container">
-        <div class="subscribe text-center">
-            <h3>Join For Free Trial Now</h3>
-            <p>Subscribe Our Newsletter and Get <br>14 Days Free Trial.</p>
-            <div class="input-group">
-                <input type="email" class="form-control" placeholder="Email id">
-                <div class="input-group-append">
-                    <button type="submit" class="Input-group-text btn">Subscribe</button>
+            <div class="col-md-12 text-center">
+                <h2>About Us</h2>
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <p>At Dantey's Fitness Center, we are committed to helping you achieve your fitness goals through personalized plans, expert trainers, and a supportive community. Join us and take the first step toward a healthier you!</p>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </section>
+
+<!-- services -->
+<section id="services" class="my-5">
+    <div class="container">
+        <div class="row">
+            <!-- Yoga -->
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm service-card h-100">
+                    <img src="service1.jpg" class="card-img-top" alt="Yoga Service">
+                    <div class="card-body text-center">
+                        <h5 class="service-title text-primary">Yoga</h5>
+                        <p class="service-description">Find your balance and flexibility with expert yoga guidance.</p>
+                        <a href="#" class="btn btn-primary service-link">Book a Session</a>
+                    </div>
+                </div>
+            </div>
+            <!-- CrossFit -->
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm service-card h-100">
+                    <img src="service2.jpg" class="card-img-top" alt="CrossFit Service">
+                    <div class="card-body text-center">
+                        <h5 class="service-title text-primary">CrossFit</h5>
+                        <p class="service-description">Push your limits with high-intensity functional training.</p>
+                        <a href="#" class="btn btn-primary service-link">Book a Session</a>
+                    </div>
+                </div>
+            </div>
+            <!-- Personal Trainer -->
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm service-card h-100">
+                    <img src="service3.jpg" class="card-img-top" alt="Personal Trainer Service">
+                    <div class="card-body text-center">
+                        <h5 class="service-title text-primary">Personal Trainer</h5>
+                        <p class="service-description">Achieve your fitness goals with personalized training.</p>
+                        <a href="#" class="btn btn-primary service-link">Book a Session</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- features -->
+<section id="features" class="my-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <h2>Meet Our Coaches</h2>
+                <div class="row">
+                    <!-- Yoga -->
+                    <div class="col-md-4 mb-4">
+                        <div class="card shadow-sm coach-card h-100">
+                            <img src="coach_yoga.jpg" class="card-img-top" alt="Yoga Coach">
+                            <div class="card-body text-center">
+                                <h4 class="coach-title text-primary">Yoga Coaches</h4>
+                                <p class="coach-description text-primary">Helping you find balance, flexibility, and peace through mindful practices.</p>
+                                <p class="coach-pay text-primary"><strong>Pay per Hour:</strong> $30</p>
+                                <a href="#" class="btn btn-primary coach-link">Book a Session</a>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- CrossFit -->
+                    <div class="col-md-4 mb-4">
+                        <div class="card shadow-sm coach-card h-100">
+                            <img src="coach_crossfit.jpg" class="card-img-top" alt="CrossFit Coach">
+                            <div class="card-body text-center">
+                                <h4 class="coach-title text-primary">CrossFit Coaches</h4>
+                                <p class="coach-description text-primary">Push your limits with high-intensity functional training.</p>
+                                <p class="coach-pay text-primary"><strong>Pay per Hour:</strong> $40</p>
+                                <a href="#" class="btn btn-primary coach-link">Book a Session</a>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Personal Trainer -->
+                    <div class="col-md-4 mb-4">
+                        <div class="card shadow-sm coach-card h-100">
+                            <img src="coach_personal.jpg" class="card-img-top" alt="Personal Trainer">
+                            <div class="card-body text-center">
+                                <h4 class="coach-title text-primary">Personal Trainers</h4>
+                                <p class="coach-description text-primary">Achieve your fitness goals with personalized one-on-one training.</p>
+                                <p class="coach-pay text-primary"><strong>Pay per Hour:</strong> $50</p>
+                                <a href="#" class="btn btn-primary coach-link">Book a Session</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <a href="#" class="btn btn-secondary mt-3">View All Coaches</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- blog -->
+<section id="blog" class="my-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <h2>Latest from Our Blog</h2>
+                <div class="row">
+                    <!-- Blog Post 1 -->
+                    <div class="col-md-4">
+                        <div class="card shadow-sm">
+                            <img src="blog1.jpg" class="card-img-top" alt="Blog 1">
+                            <div class="card-body">
+                                <h5>5 Tips to Stay Motivated</h5>
+                                <p>Learn how to keep your fitness goals on track with these simple steps.</p>
+                                <a href="#" class="btn btn-secondary">Read More</a>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Blog Post 2 -->
+                    <div class="col-md-4">
+                        <div class="card shadow-sm">
+                            <img src="blog2.jpg" class="card-img-top" alt="Blog 2">
+                            <div class="card-body">
+                                <h5>Top 10 Healthy Snacks</h5>
+                                <p>Snack smarter with our list of tasty and nutritious options.</p>
+                                <a href="#" class="btn btn-secondary">Read More</a>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Blog Post 3 -->
+                    <div class="col-md-4">
+                        <div class="card shadow-sm">
+                            <img src="blog3.jpg" class="card-img-top" alt="Blog 3">
+                            <div class="card-body">
+                                <h5>Why Strength Training Matters</h5>
+                                <p>Discover the benefits of incorporating strength training into your routine.</p>
+                                <a href="#" class="btn btn-secondary">Read More</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <a href="#" class="btn btn-secondary mt-3">View All Blogs</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- testimonials -->
+<section id="testimonials" class="my-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <h2>What Our Members Say</h2>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <blockquote>
+                                    <p>"Dantey's Fitness Center has changed my life! The trainers are amazing, and the community is so supportive."</p>
+                                    <footer>
+                                        image
+                                        - Jane Doe
+                                    </footer>
+                                </blockquote>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <blockquote>
+                                    <p>"I achieved my fitness goals thanks to their personalized plans and encouragement!"</p>
+                                    <footer>- John Smith</footer>
+                                </blockquote>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <a href="#" class="btn btn-secondary mt-3">Share Your Story</a>
+            </div>
+        </div>
+    </div>
+</section>
+
 {% endblock %}

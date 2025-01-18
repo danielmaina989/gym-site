@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}FAQ - Dantey's Fitness Center{% endblock %}
+
+{% block main_content %}
+<section id="faq" class="my-5">
+    <div class="container">
+        <div class="row text-center mb-4">
+            <div class="col">
+                <h1 class="text-primary">Frequently Asked Questions</h1>
+                <p class="lead text-muted">Find answers to the most common questions about our services.</p>
+            </div>
+        </div>
+
+        <!-- First Row -->
+        <div class="row align-items-center mb-5">
+            <!-- Image -->
+            <div class="col-md-6">
+                <img src="{% static 'images/faq_image1.jpg' %}" alt="FAQ Image 1" class="img-fluid rounded shadow">
+            </div>
+            <!-- FAQ Section -->
+            <div class="col-md-6">
+                <div class="faq">
+                    <h5 class="faq-question">
+                        <a class="btn btn-link text-decoration-none text-dark fw-bold border rounded border-primary d-flex align-items-center justify-content-between" data-bs-toggle="collapse" href="#faq1" role="button" aria-expanded="false" aria-controls="faq1">
+                            What are your operating hours?
+                            <i class="bi bi-plus"></i>
+                        </a>
+                    </h5>
+                    <div class="collapse" id="faq1">
+                        <p class="faq-answer text-muted">We are open Monday to Saturday from 6:00 AM to 10:00 PM and Sunday from 8:00 AM to 6:00 PM.</p>
+                    </div>
+
+                    <h5 class="faq-question">
+                        <a class="btn btn-link text-decoration-none text-dark fw-bold border rounded border-primary d-flex align-items-center justify-content-between" data-bs-toggle="collapse" href="#faq2" role="button" aria-expanded="false" aria-controls="faq2">
+                            Do you offer personal training sessions?
+                            <i class="bi bi-plus"></i>
+                        </a>
+                    </h5>
+                    <div class="collapse" id="faq2">
+                        <p class="faq-answer text-muted">Yes, we offer personalized training sessions tailored to your fitness goals.</p>
+                    </div>
+
+                    <h5 class="faq-question">
+                        <a class="btn btn-link text-decoration-none text-dark fw-bold border rounded border-primary d-flex align-items-center justify-content-between" data-bs-toggle="collapse" href="#faq3" role="button" aria-expanded="false" aria-controls="faq3">
+                            Can I cancel my membership anytime?
+                            <i class="bi bi-plus"></i>
+                        </a>
+                    </h5>
+                    <div class="collapse" id="faq3">
+                        <p class="faq-answer text-muted">Yes, you can cancel your membership by giving us a one-month notice.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Second Row -->
+        <div class="row align-items-center">
+            <!-- FAQ Section -->
+            <div class="col-md-6 order-md-2">
+                <div class="faq">
+                    <h5 class="faq-question">
+                        <a class="btn btn-link text-decoration-none text-dark fw-bold border rounded border-primary d-flex align-items-center justify-content-between" data-bs-toggle="collapse" href="#faq4" role="button" aria-expanded="false" aria-controls="faq4">
+                            What payment methods do you accept?
+                            <i class="bi bi-plus"></i>
+                        </a>
+                    </h5>
+                    <div class="collapse" id="faq4">
+                        <p class="faq-answer text-muted">We accept cash, credit/debit cards, and mobile money payments like M-Pesa.</p>
+                    </div>
+
+                    <h5 class="faq-question">
+                        <a class="btn btn-link text-decoration-none text-dark fw-bold border rounded border-primary d-flex align-items-center justify-content-between" data-bs-toggle="collapse" href="#faq5" role="button" aria-expanded="false" aria-controls="faq5">
+                            Are there discounts for group memberships?
+                            <i class="bi bi-plus"></i>
+                        </a>
+                    </h5>
+                    <div class="collapse" id="faq5">
+                        <p class="faq-answer text-muted">Yes, we offer discounts for group memberships. Contact us for more details.</p>
+                    </div>
+
+                    <h5 class="faq-question">
+                        <a class="btn btn-link text-decoration-none text-dark fw-bold border rounded border-primary d-flex align-items-center justify-content-between" data-bs-toggle="collapse" href="#faq6" role="button" aria-expanded="false" aria-controls="faq6">
+                            Do you provide locker facilities?
+                            <i class="bi bi-plus"></i>
+                        </a>
+                    </h5>
+                    <div class="collapse" id="faq6">
+                        <p class="faq-answer text-muted">Yes, we provide secure lockers for all our members.</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Image -->
+            <div class="col-md-6 order-md-1">
+                <img src="{% static 'images/faq_image2.jpg' %}" alt="FAQ Image 2" class="img-fluid rounded shadow">
+            </div>
+        </div>
+        <!-- Button to 'About Us' Page -->
+<div class="text-center mt-4">
+    <a href="{% url 'gym:about' %}" class="btn btn-primary btn-lg">Send us your enquiry</a>
+</div>
+    </div>
+</section>
+{% endblock %}

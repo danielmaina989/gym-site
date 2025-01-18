@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block title %}Login - Dantey's Fitness Center{% endblock %}
+
+{% block main_content %}
+<div class="container mt-5">
+    <div class="card shadow-lg p-4">
+        <div class="card-body">
+            <h2 class="card-title text-center mb-4">🔐 Login</h2>
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-success btn-block mt-3">Login 🏋️</button>
+            </form>
+            <p class="text-center mt-3">
+                Don't have an account? 
+                <a href="{% url 'members:register' %}" class="text-success font-weight-bold">Register</a> 🎉
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

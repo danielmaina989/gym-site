@@ -39,6 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'gym.apps.GymConfig',
+    'members.apps.MembersConfig',
+    'admin_dashboard.apps.AdminDashboardConfig',
 ]
 
 MIDDLEWARE = [
@@ -100,6 +102,9 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+# login redirect
+LOGIN_REDIRECT_URL = '/'
 
 
 # Internationalization

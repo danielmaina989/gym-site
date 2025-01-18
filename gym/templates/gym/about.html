@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+
+{% block title %}About Us - Dantey's Fitness Center{% endblock %}
+
+{% block main_content %}
+<section id="about-us" class="my-5">
+    <div class="container">
+        <div class="row text-center mb-4">
+            <div class="col">
+                <h1 class="text-primary">About Us</h1>
+                <p class="lead text-muted">Your journey to fitness begins here.</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <h2 class="text-primary">Our Mission</h2>
+                <p>
+                    At Dantey's Fitness Center, our mission is to empower individuals to lead healthier, happier lives.
+                    We provide expert coaching, state-of-the-art equipment, and a supportive community to help you
+                    achieve your fitness goals.
+                </p>
+            </div>
+            <div class="col-md-6">
+                <img src="mission.jpg" alt="Mission Image" class="img-fluid rounded shadow-sm">
+            </div>
+        </div>
+        <hr class="my-5">
+        <div class="row">
+            <div class="col-md-6 order-md-2">
+                <h2 class="text-primary">Our Vision</h2>
+                <p>
+                    We envision a world where everyone has the opportunity to embrace fitness as a lifestyle.
+                    Whether you're a beginner or a seasoned athlete, Dantey's Fitness Center is your home for all
+                    things fitness and wellness.
+                </p>
+            </div>
+            <div class="col-md-6 order-md-1">
+                <img src="vision.jpg" alt="Vision Image" class="img-fluid rounded shadow-sm">
+            </div>
+        </div>
+        <hr class="my-5">
+        <div class="row text-center">
+            <div class="col">
+                <h2 class="text-primary">Why Choose Us?</h2>
+            </div>
+        </div>
+        <div class="row text-center mt-4">
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body">
+                        <!-- Expert Coaches icon -->
+                        <i class="bi bi-people-fill text-primary fs-2"></i>
+                        <h5 class="card-title mt-3 text-primary">Expert Coaches</h5>
+                        <p class="card-text">
+                            Our certified trainers are here to guide you every step of the way.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body">
+                        <!-- Dumbbell icon for State-of-the-Art Facilities -->
+                        <i class="bi bi-dumbbell text-primary fs-2"></i>
+                        <h5 class="card-title mt-3 text-primary">State-of-the-Art Facilities</h5>
+                        <p class="card-text">
+                            Train with the latest equipment in a clean and inspiring environment.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body">
+                        <!-- Community Support icon -->
+                        <i class="bi bi-heart-fill text-primary fs-2"></i>
+                        <h5 class="card-title mt-3 text-primary">Community Support</h5>
+                        <p class="card-text">
+                            Join a community that motivates and celebrates every achievement.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+        <hr class="my-5">
+        <div class="row text-center">
+            <div class="col">
+                <h2 class="text-primary">Our Story</h2>
+                <p>
+                    Founded by fitness enthusiasts, Dantey's Fitness Center was established with the goal of creating a
+                    space where everyone feels welcome. Over the years, we've grown into a thriving hub of fitness
+                    and wellness, inspiring thousands to lead active lifestyles.
+                </p>
+                <!-- Optional CTA Button -->
+                <a href="#contact" class="btn btn-primary mt-4">Join Us Today</a>
+            </div>
+        </div>
+
+        <hr class="my-5">
+        <h2 class="text-primary text-center mb-3">Contact Us</h2>
+        <div class="row">
+            
+            <div class="col-md-6">
+                <!-- Address and Map Section -->
+                <h3 class="text-primary">Our Address</h3>
+                <p>123 Fitness St, Health City, Fitland</p>
+                <div class="embed-responsive embed-responsive-16by9">
+                    <iframe  title="..." name="..." class="embed-responsive-item" src="https://www.google.com/maps/embed/v1/place?q=fitness&key=YOUR_GOOGLE_MAPS_API_KEY" allowfullscreen></iframe>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <!-- Contact Form Section -->
+                <h3 class="text-primary">Get in Touch</h3>
+                <form action="/submit-contact-form" method="POST">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Name</label>
+                        <input type="text" class="form-control" id="name" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="message" class="form-label">Message</label>
+                        <textarea class="form-control" id="message" name="message" rows="4" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Send</button>
+                    <button type="reset" class="btn btn-secondary">Reset</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
