@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'gym.apps.GymConfig',
     'members.apps.MembersConfig',
     'admin_dashboard.apps.AdminDashboardConfig',
+    'gym_blog.apps.GymBlogConfig',
 ]
 
 MIDDLEWARE = [
@@ -123,6 +124,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+# Define where media files will be stored
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field

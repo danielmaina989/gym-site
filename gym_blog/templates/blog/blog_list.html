@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block main_content %}
+<div class="container mt-4">
+  <h1 class="mb-4 text-center">Blog</h1>
+  
+  <!-- Add a link to create a new post (visible to staff or superusers) -->
+  {% if user.is_authenticated and user.is_staff or user.is_superuser %}
+    <a href="{% url 'gym_blog:post_create' %}" class="btn btn-success mb-4">Create New Post</a>
+  {% endif %}
+  
+  <div class="row">
+    {% for post in posts %}
+      <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow-sm">
+          <img src="{{ post.image.url }}" class="card-img-top" alt={{post.title}} style="height: 200px; object-fit: cover;">
+          <div class="card-body">
+            <h5 class="card-title">{{ post.title }}</h5>
+            <p class="card-text text-muted">
+              By <strong>{{ post.author }}</strong> | {{ post.pub_date|date:"F j, Y" }}
+            </p>
+            <p class="card-text">{{ post.content|truncatewords:20 }}</p>
+            <a href="{% url 'gym_blog:blog_detail' slug=post.slug %}" class="btn btn-primary">Read More</a>
+            {% if user.is_authenticated and user.is_staff or user.is_superuser %}
+              <a href="{% url 'gym_blog:post_edit' slug=post.slug %}" class="btn btn-sm btn-warning">Edit</a>
+              <a href="{% url 'gym_blog:post_delete' slug=post.slug %}" class="btn btn-sm btn-danger">Delete</a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <p class="text-center">No blog posts available.</p>
+    {% endfor %}
+  </div>
+
+  <!-- Pagination -->
+  <div class="d-flex justify-content-center mt-4">
+    {% if is_paginated %}
+      <ul class="pagination">
+        {% if page_obj.has_previous %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+          </li>
+        {% endif %}
+        <li class="page-item disabled">
+          <span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+        </li>
+        {% if page_obj.has_next %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+          </li>
+        {% endif %}
+      </ul>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

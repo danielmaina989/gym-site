@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block main_content %}
+<div class="container mt-4">
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <h1 class="card-title text-center">{{ post.title }}</h1>
+      <p class="text-muted text-center">
+        By <strong>{{ post.author }}</strong> | {{ post.pub_date|date:"F j, Y" }}
+      </p>
+      <div class="text-center mb-4">
+        <img src="{{ post.image.url }}" class="img-fluid rounded" alt="{{ post.title }}"
+          style="max-height: 400px; object-fit: cover;">
+      </div>
+      <div class="card-text">
+        {{ post.content|linebreaks }}
+      </div>
+      <div class="text-center mt-4">
+        {% if user.is_authenticated %}
+            {% if user.is_staff or user.is_superuser %}
+                <a href="{% url 'gym_blog:post_edit' slug=post.slug %}" class="btn btn-warning">Edit Post</a>
+                <a href="{% url 'gym_blog:post_delete' slug=post.slug %}" class="btn btn-danger">Delete Post</a>
+            {% endif %}
+        {% endif %}
+        <a href="{% url 'gym_blog:blog_list' %}" class="btn btn-outline-primary">Back to Blog</a>
+    </div>
+    
+    </div>
+  </div>
+</div>
+{% endblock %}

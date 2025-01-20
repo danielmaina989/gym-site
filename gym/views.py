@@ -49,4 +49,4 @@ class DeleteReviewView(UserPassesTestMixin, DeleteView):
     def test_func(self):
         return self.request.user.is_staff
 
-
+# blog site

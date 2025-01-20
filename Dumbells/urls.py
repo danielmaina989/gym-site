@@ -24,6 +24,7 @@ urlpatterns = [
     path('', include('gym.urls')),
     path('', include('members.urls')),
     path('', include('admin_dashboard.urls')),
+    path('', include('gym_blog.urls')),
 ]
 
 urlpatterns = urlpatterns + static(settings.MEDIA_URL , document_root = settings.MEDIA_ROOT)
