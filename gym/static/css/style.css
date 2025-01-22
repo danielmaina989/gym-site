@@ -145,64 +145,31 @@
   text-align: left;
 }
 /* ---------------------Services-------------- */
+/* Ensure the image container takes the full width of the card */
+.card-img-top {
+  width: 100%;
+  height: 250px; /* Adjust the height to the desired value */
+  object-fit: cover; /* Ensures the image fully covers the area */
+  border-radius: 0.25rem 0.25rem 0 0; /* Matches the rounded corners of the card */
+}
+
+/* Additional card styles for hover effects */
 .service-card {
-    transition: transform 0.3s, box-shadow 0.3s;
-    overflow: hidden;
-    position: relative;
+  transition: transform 0.3s, box-shadow 0.3s;
 }
 
 .service-card:hover {
-    transform: scale(1.05);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  transform: translateY(-5px);
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
 }
 
-/* Image styling */
-.service-card img {
-    object-fit: cover;
-    height: 200px;
-    width: 100%;
-    transition: transform 0.3s;
-}
-
-.service-card:hover img {
-    transform: scale(1.1);
-}
-
-/* Title and description styling */
-.service-title {
-    font-size: 1.25rem;
-    margin: 0.5rem 0;
-    transition: font-weight 0.3s;
-}
-
-.service-description {
-    font-size: 0.9rem;
-    color: #555;
-}
-
-.service-card:hover .service-title {
-    font-weight: bold;
-}
-
-/* Button visibility */
-.service-link {
-    display: none;
-    margin-top: 0.5rem;
-}
-
-.service-card:hover .service-link {
-    display: inline-block;
-}
-
-/* Responsive design */
 @media (max-width: 768px) {
-    .service-card img {
-        height: 150px;
-    }
-    .service-title {
-        font-size: 1rem;
-    }
+  .card-img-top {
+      height: 150px; /* Adjust for smaller screens */
+  }
 }
+
+
 
 /* ----------faq----------- */
 .faq-question {

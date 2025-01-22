@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load form_filters %}
+
+{% block title %}About Us - Dantey's Fitness Center{% endblock %}
+
+{% block main_content %}
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Contact Us</h2>
+    
+    <form method="POST" action="{% url 'gym:contact' %}" class="bg-light p-4 rounded shadow-sm">
+        {% csrf_token %}
+        
+        <!-- Render form fields with added class using custom filter -->
+        <div class="form-group mb-3">
+            <label for="{{ form.name.id_for_label }}" class="form-label">Name</label>
+            {{ form.name|add_class:"form-control" }}
+        </div>
+        
+        <div class="form-group mb-3">
+            <label for="{{ form.email.id_for_label }}" class="form-label">Email</label>
+            {{ form.email|add_class:"form-control" }}
+        </div>
+        
+        <div class="form-group mb-3">
+            <label for="{{ form.message.id_for_label }}" class="form-label">Message</label>
+            {{ form.message|add_class:"form-control" }}
+        </div>
+        
+        <div class="form-group mb-3">
+            <label for="{{ form.enquiry_type.id_for_label }}" class="form-label">Enquiry Type</label>
+            {{ form.enquiry_type|add_class:"form-control" }}
+        </div>
+        
+        <!-- Buttons for submission and reset -->
+        <div class="d-flex justify-content-between mt-4">
+            <button type="submit" class="btn btn-primary">Send</button>
+            <button type="reset" class="btn btn-secondary">Reset</button>
+        </div>
+    </form>
+</div>
+
+{% endblock %}

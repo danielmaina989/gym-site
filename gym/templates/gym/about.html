@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}About Us - Dantey's Fitness Center{% endblock %}
 
@@ -21,7 +22,7 @@
                 </p>
             </div>
             <div class="col-md-6">
-                <img src="mission.jpg" alt="Mission Image" class="img-fluid rounded shadow-sm">
+                <img src="{%static 'images/mission.jpeg'%}" alt="Mission Image" class="img-fluid rounded shadow-sm">
             </div>
         </div>
         <hr class="my-5">
@@ -35,7 +36,7 @@
                 </p>
             </div>
             <div class="col-md-6 order-md-1">
-                <img src="vision.jpg" alt="Vision Image" class="img-fluid rounded shadow-sm">
+                <img src="{%static 'images/vision.jpeg'%}" alt="Vision Image" class="img-fluid rounded shadow-sm">
             </div>
         </div>
         <hr class="my-5">
@@ -82,7 +83,7 @@
                 </div>
             </div>
         </div>
-    
+
         <hr class="my-5">
         <div class="row text-center">
             <div class="col">
@@ -100,35 +101,22 @@
         <hr class="my-5">
         <h2 class="text-primary text-center mb-3">Contact Us</h2>
         <div class="row">
-            
+
             <div class="col-md-6">
                 <!-- Address and Map Section -->
                 <h3 class="text-primary">Our Address</h3>
                 <p>123 Fitness St, Health City, Fitland</p>
                 <div class="embed-responsive embed-responsive-16by9">
-                    <iframe  title="..." name="..." class="embed-responsive-item" src="https://www.google.com/maps/embed/v1/place?q=fitness&key=YOUR_GOOGLE_MAPS_API_KEY" allowfullscreen></iframe>
+                    <iframe title="..." name="..." class="embed-responsive-item"
+                        src="https://www.google.com/maps/embed/v1/place?q=fitness&key=YOUR_GOOGLE_MAPS_API_KEY"
+                        allowfullscreen></iframe>
                 </div>
             </div>
             <div class="col-md-6">
-                <!-- Contact Form Section -->
                 <h3 class="text-primary">Get in Touch</h3>
-                <form action="/submit-contact-form" method="POST">
-                    {% csrf_token %}
-                    <div class="mb-3">
-                        <label for="name" class="form-label">Name</label>
-                        <input type="text" class="form-control" id="name" name="name" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="email" class="form-label">Email</label>
-                        <input type="email" class="form-control" id="email" name="email" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="message" class="form-label">Message</label>
-                        <textarea class="form-control" id="message" name="message" rows="4" required></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Send</button>
-                    <button type="reset" class="btn btn-secondary">Reset</button>
-                </form>
+                    <a href="{% url 'gym:contact' %}" class="btn btn-primary btn-lg">Send us your enquiry</a>
+
+
             </div>
         </div>
     </div>

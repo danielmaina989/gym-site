@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Home - Dantey's Fitness Center{% endblock %}
 
@@ -29,46 +30,29 @@
     </div>
 </section>
 
-<!-- services -->
+<!-- -----------services---------- -->
 <section id="services" class="my-5">
     <div class="container">
         <div class="row">
-            <!-- Yoga -->
+            {% for service in services %}
             <div class="col-md-4 mb-4">
                 <div class="card shadow-sm service-card h-100">
-                    <img src="service1.jpg" class="card-img-top" alt="Yoga Service">
+                    <img src="{{ service.image.url }}" class="card-img-top service-img" alt="{{ service.name }}">
                     <div class="card-body text-center">
-                        <h5 class="service-title text-primary">Yoga</h5>
-                        <p class="service-description">Find your balance and flexibility with expert yoga guidance.</p>
+                        <h5 class="service-title text-primary">{{ service.name }}</h5>
+                        <p class="service-description">{{ service.description }}</p>
+                        {% if service.price_per_session %}
+                            <p class="text-muted">Price per session: ${{ service.price_per_session }}</p>
+                        {% endif %}
                         <a href="#" class="btn btn-primary service-link">Book a Session</a>
                     </div>
                 </div>
             </div>
-            <!-- CrossFit -->
-            <div class="col-md-4 mb-4">
-                <div class="card shadow-sm service-card h-100">
-                    <img src="service2.jpg" class="card-img-top" alt="CrossFit Service">
-                    <div class="card-body text-center">
-                        <h5 class="service-title text-primary">CrossFit</h5>
-                        <p class="service-description">Push your limits with high-intensity functional training.</p>
-                        <a href="#" class="btn btn-primary service-link">Book a Session</a>
-                    </div>
-                </div>
-            </div>
-            <!-- Personal Trainer -->
-            <div class="col-md-4 mb-4">
-                <div class="card shadow-sm service-card h-100">
-                    <img src="service3.jpg" class="card-img-top" alt="Personal Trainer Service">
-                    <div class="card-body text-center">
-                        <h5 class="service-title text-primary">Personal Trainer</h5>
-                        <p class="service-description">Achieve your fitness goals with personalized training.</p>
-                        <a href="#" class="btn btn-primary service-link">Book a Session</a>
-                    </div>
-                </div>
-            </div>
+            {% endfor %}
         </div>
     </div>
 </section>
+
 
 <!-- features -->
 <section id="features" class="my-5">
@@ -127,41 +111,20 @@
             <div class="col-md-12 text-center">
                 <h2>Latest from Our Blog</h2>
                 <div class="row">
-                    <!-- Blog Post 1 -->
-                    <div class="col-md-4">
+                    {% for post in latest_blogs %}
+                    <div class="col-md-4 mb-4">
                         <div class="card shadow-sm">
-                            <img src="blog1.jpg" class="card-img-top" alt="Blog 1">
+                            <img src="{{ post.image.url }}" class="card-img-top" alt="{{ post.title }}">
                             <div class="card-body">
-                                <h5>5 Tips to Stay Motivated</h5>
-                                <p>Learn how to keep your fitness goals on track with these simple steps.</p>
-                                <a href="#" class="btn btn-secondary">Read More</a>
+                                <h5>{{ post.title }}</h5>
+                                <p>{{ post.excerpt }}</p>
+                                <a href="{{ post.url }}" class="btn btn-secondary">Read More</a>
                             </div>
                         </div>
                     </div>
-                    <!-- Blog Post 2 -->
-                    <div class="col-md-4">
-                        <div class="card shadow-sm">
-                            <img src="blog2.jpg" class="card-img-top" alt="Blog 2">
-                            <div class="card-body">
-                                <h5>Top 10 Healthy Snacks</h5>
-                                <p>Snack smarter with our list of tasty and nutritious options.</p>
-                                <a href="#" class="btn btn-secondary">Read More</a>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Blog Post 3 -->
-                    <div class="col-md-4">
-                        <div class="card shadow-sm">
-                            <img src="blog3.jpg" class="card-img-top" alt="Blog 3">
-                            <div class="card-body">
-                                <h5>Why Strength Training Matters</h5>
-                                <p>Discover the benefits of incorporating strength training into your routine.</p>
-                                <a href="#" class="btn btn-secondary">Read More</a>
-                            </div>
-                        </div>
-                    </div>
+                    {% endfor %}
                 </div>
-                <a href="#" class="btn btn-secondary mt-3">View All Blogs</a>
+                <a href="{% url 'gym_blog:blog_list' %}" class="btn btn-secondary mt-3">View All Blogs</a>
             </div>
         </div>
     </div>

@@ -5,7 +5,8 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from django.urls import reverse_lazy
 from .models import Post, Category
 from .forms import PostForm
-from django.utils import timezone
+
+ 
 
 
 class BlogListView(ListView):
@@ -37,7 +38,6 @@ class AdminOrStaffMixin(UserPassesTestMixin):
 
 class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
-    fields = ['title', 'slug', 'author', 'content', 'image', 'pub_date']
     form_class = PostForm  # Ensure you're using the right form
     template_name = 'blog/post_form.html'
     success_url = reverse_lazy('gym_blog:blog_list')
@@ -60,3 +60,5 @@ class PostDeleteView(LoginRequiredMixin, AdminOrStaffMixin, DeleteView):
     model = Post
     template_name = 'blog/post_confirm_delete.html'
     success_url = reverse_lazy('gym_blog:blog_list')
+
+

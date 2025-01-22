@@ -10,4 +10,5 @@ urlpatterns = [
     path('submit-review/', views.SubmitReviewView.as_view(), name='submit_review'),
      path('review/<int:pk>/delete/', views.DeleteReviewView.as_view(), name='delete_review'), 
     path('review/<int:pk>/update/', views.UpdateReviewView.as_view(), name='update_review'),
+    path('contact/', views.ContactView.as_view(), name='contact'),
 ]
