@@ -1,6 +1,8 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django import forms
+from .models import TrialUser
+from datetime import date, timedelta
 
 class CustomUserCreationForm(UserCreationForm):
     email = forms.EmailField(required=True, widget=forms.EmailInput(attrs={'placeholder': 'Enter your email'}))
@@ -19,3 +21,18 @@ class CustomUserCreationForm(UserCreationForm):
         if commit:
             user.save()
         return user
+
+
+class TrialUserForm(forms.ModelForm):
+    class Meta:
+        model = TrialUser
+        fields = ['full_name', 'email', 'phone_number']
+    
+    def save(self, commit=True):
+        trial_user = super().save(commit=False)
+        trial_user.trial_end_date = date.today() + timedelta(days=14)  # Automatically set the trial end date
+        trial_user.status = "Active"  # Set default status as Active
+        if commit:
+            trial_user.save()
+        return trial_user
+

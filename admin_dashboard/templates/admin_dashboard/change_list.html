@@ -1,0 +1,37 @@
+{% extends 'admin/base_site.html' %}
+
+
+{% block content %}
+<div class="analytics-summary">
+    <h2>Trial User Analytics</h2>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card text-center bg-success text-white">
+                <div class="card-body">
+                    <h5>Total Signups</h5>
+                    <h1>{{ analytics.total_signups }}</h1>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center bg-primary text-white">
+                <div class="card-body">
+                    <h5>Active Trials</h5>
+                    <h1>{{ analytics.active_trials }}</h1>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center bg-danger text-white">
+                <div class="card-body">
+                    <h5>Expired Trials</h5>
+                    <h1>{{ analytics.expired_trials }}</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Render the standard admin changelist -->
+{{ block.super }}
+{% endblock %}

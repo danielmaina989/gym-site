@@ -6,14 +6,54 @@
 {% block main_content %}
 <section id="welcome">
     <div class="container">
-        <div class="welcome text-center wow slideInLeft delay-2s">
+        <div class="welcome text-center">
             <h1>"Transform Your Body, Transform Your Life!" 🏋️‍♂️ 💪</h1>
-            <p>Our mission is to guide individuals on their fitness journey by offering expert support, innovative training methods, and an unwavering commitment to personal transformation.</p>
-            <p>Our vision is to be the go-to fitness hub for life-changing results, where members discover their potential and achieve their best selves.</p>
-            <button type="submit" class="btn home-btn">Start Your Free Trial Today</button>
+            <p>Start your 14-day free trial and unlock your full potential with us!</p>
+            <ul class="trial-benefits">
+                <li><i class="fas fa-dumbbell"></i> Access to all gym facilities</li>
+                <li><i class="fas fa-user"></i> Personalized fitness consultation</li>
+                <li><i class="fas fa-heart"></i> One-on-one coaching sessions</li>
+                <li><i class="fas fa-users"></i> Exclusive group classes</li>
+            </ul>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#trialModal">
+                Start Your Free Trial Today
+            </button>
+            <p class="fine-print">*14-day trial valid for new members only.</p>
+        </div>
+    </div>
+
+    <!-- Trial Signup Modal -->
+    <div class="modal fade" id="trialModal" tabindex="-1" aria-labelledby="trialModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="trialModalLabel">Sign Up for Your Free Trial</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form method="POST" action="{% url 'members:trial_signup' %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="fullName" class="form-label">Full Name</label>
+                            <input type="text" class="form-control" id="fullName" name="full_name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="phone" class="form-label">Phone Number</label>
+                            <input type="tel" class="form-control" id="phone" name="phone_number">
+                        </div>
+                        <button type="submit" class="btn btn-success">Sign Up</button>
+                    </form>
+                    
+                </div>
+            </div>
         </div>
     </div>
 </section>
+
 <!-- about -->
 <section id="about" class="my-5">
     <div class="container">

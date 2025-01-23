@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block title %}Start Your Trial{% endblock %}
+
+{% block main_content %}
+<h1>Start Your 14-Day Free Trial</h1>
+<p>Sign up to begin your fitness journey!</p>
+<form method="POST">
+    {% csrf_token %}
+    <!-- Add your form fields here -->
+    <button type="submit" class="btn btn-primary">Sign Up</button>
+</form>
+{% endblock %}
