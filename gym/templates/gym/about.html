@@ -94,9 +94,41 @@
                     and wellness, inspiring thousands to lead active lifestyles.
                 </p>
                 <!-- Optional CTA Button -->
-                <a href="#contact" class="btn btn-primary mt-4">Join Us Today</a>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#trialModal">
+                    Start Your Free Trial Today
+                </button>            </div>
+        </div>
+
+            <!-- Trial Signup Modal -->
+    <div class="modal fade" id="trialModal" tabindex="-1" aria-labelledby="trialModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="trialModalLabel">Sign Up for Your Free Trial</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form method="POST" action="{% url 'members:trial_signup' %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="fullName" class="form-label">Full Name</label>
+                            <input type="text" class="form-control" id="fullName" name="full_name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="phone" class="form-label">Phone Number</label>
+                            <input type="tel" class="form-control" id="phone" name="phone_number">
+                        </div>
+                        <button type="submit" class="btn btn-success">Sign Up</button>
+                    </form>
+
+                </div>
             </div>
         </div>
+    </div>
 
         <hr class="my-5">
         <h2 class="text-primary text-center mb-3">Contact Us</h2>

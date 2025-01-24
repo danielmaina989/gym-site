@@ -18,6 +18,7 @@ class HomeView(TemplateView):
         context = super().get_context_data(**kwargs)
         # Fetch the latest 3 services and blog posts
         context['services'] = Service.objects.all()[:3]
+        context['reviews'] = Review.objects.all()[:3]
         context['latest_blogs'] = Post.objects.order_by('-pub_date')[:3]  # Adjust based on your model field
         return context
 
@@ -31,9 +32,9 @@ class FaqView(TemplateView):
 
 class ReviewsPageView(View):
     def get(self, request):
-        reviews = Review.objects.all()
+        reviews = Review.objects.order_by('-created_at')
         return render(request, 'gym/reviews.html', {'reviews': reviews})
-
+    
 class SubmitReviewView(CreateView):
     form_class = ReviewForm
     template_name = 'gym/submit_review.html'

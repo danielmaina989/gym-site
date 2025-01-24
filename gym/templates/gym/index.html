@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load custom_filters %}
 
 {% block title %}Home - Dantey's Fitness Center{% endblock %}
 
@@ -47,7 +48,7 @@
                         </div>
                         <button type="submit" class="btn btn-success">Sign Up</button>
                     </form>
-                    
+
                 </div>
             </div>
         </div>
@@ -62,7 +63,9 @@
                 <h2>About Us</h2>
                 <div class="card shadow-sm">
                     <div class="card-body">
-                        <p>At Dantey's Fitness Center, we are committed to helping you achieve your fitness goals through personalized plans, expert trainers, and a supportive community. Join us and take the first step toward a healthier you!</p>
+                        <p>At Dantey's Fitness Center, we are committed to helping you achieve your fitness goals
+                            through personalized plans, expert trainers, and a supportive community. Join us and take
+                            the first step toward a healthier you!</p>
                     </div>
                 </div>
             </div>
@@ -82,7 +85,7 @@
                         <h5 class="service-title text-primary">{{ service.name }}</h5>
                         <p class="service-description">{{ service.description }}</p>
                         {% if service.price_per_session %}
-                            <p class="text-muted">Price per session: ${{ service.price_per_session }}</p>
+                        <p class="text-muted">Price per session: ${{ service.price_per_session }}</p>
                         {% endif %}
                         <a href="#" class="btn btn-primary service-link">Book a Session</a>
                     </div>
@@ -107,7 +110,8 @@
                             <img src="coach_yoga.jpg" class="card-img-top" alt="Yoga Coach">
                             <div class="card-body text-center">
                                 <h4 class="coach-title text-primary">Yoga Coaches</h4>
-                                <p class="coach-description text-primary">Helping you find balance, flexibility, and peace through mindful practices.</p>
+                                <p class="coach-description text-primary">Helping you find balance, flexibility, and
+                                    peace through mindful practices.</p>
                                 <p class="coach-pay text-primary"><strong>Pay per Hour:</strong> $30</p>
                                 <a href="#" class="btn btn-primary coach-link">Book a Session</a>
                             </div>
@@ -119,7 +123,8 @@
                             <img src="coach_crossfit.jpg" class="card-img-top" alt="CrossFit Coach">
                             <div class="card-body text-center">
                                 <h4 class="coach-title text-primary">CrossFit Coaches</h4>
-                                <p class="coach-description text-primary">Push your limits with high-intensity functional training.</p>
+                                <p class="coach-description text-primary">Push your limits with high-intensity
+                                    functional training.</p>
                                 <p class="coach-pay text-primary"><strong>Pay per Hour:</strong> $40</p>
                                 <a href="#" class="btn btn-primary coach-link">Book a Session</a>
                             </div>
@@ -131,7 +136,8 @@
                             <img src="coach_personal.jpg" class="card-img-top" alt="Personal Trainer">
                             <div class="card-body text-center">
                                 <h4 class="coach-title text-primary">Personal Trainers</h4>
-                                <p class="coach-description text-primary">Achieve your fitness goals with personalized one-on-one training.</p>
+                                <p class="coach-description text-primary">Achieve your fitness goals with personalized
+                                    one-on-one training.</p>
                                 <p class="coach-pay text-primary"><strong>Pay per Hour:</strong> $50</p>
                                 <a href="#" class="btn btn-primary coach-link">Book a Session</a>
                             </div>
@@ -177,31 +183,32 @@
             <div class="col-md-12 text-center">
                 <h2>What Our Members Say</h2>
                 <div class="row">
+                    {% for review in reviews %}
                     <div class="col-md-6">
-                        <div class="card shadow-sm">
+                        <div class="card shadow-sm mb-4">
                             <div class="card-body">
                                 <blockquote>
-                                    <p>"Dantey's Fitness Center has changed my life! The trainers are amazing, and the community is so supportive."</p>
+                                    <p>"{{ review.comment }}"</p>
                                     <footer>
-                                        image
-                                        - Jane Doe
+                                        <span class="d-block font-weight-bold">{{ review.name }}</span>
+                                        <!-- Display filled stars based on review rating -->
+                                        <!-- Display filled stars -->
+                                        {% for _ in review.rating|get_range %}
+                                        ⭐
+                                        {% endfor %}
+                                        <!-- Display empty stars -->
+                                        {% for _ in 5|add:"-review.rating"|get_range %}
+                                        ☆
+                                        {% endfor %}
+
                                     </footer>
                                 </blockquote>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <div class="card shadow-sm">
-                            <div class="card-body">
-                                <blockquote>
-                                    <p>"I achieved my fitness goals thanks to their personalized plans and encouragement!"</p>
-                                    <footer>- John Smith</footer>
-                                </blockquote>
-                            </div>
-                        </div>
-                    </div>
+                    {% endfor %}
                 </div>
-                <a href="#" class="btn btn-secondary mt-3">Share Your Story</a>
+                <a href="{% url 'gym:reviews' %}" class="btn btn-secondary mt-3">Share Your Story</a>
             </div>
         </div>
     </div>

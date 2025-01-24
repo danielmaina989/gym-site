@@ -42,6 +42,8 @@ INSTALLED_APPS = [
     'members.apps.MembersConfig',
     'admin_dashboard.apps.AdminDashboardConfig',
     'gym_blog.apps.GymBlogConfig',
+    'coaches.apps.CoachesConfig',
+    'shop.apps.ShopConfig',
 ]
 
 MIDDLEWARE = [
