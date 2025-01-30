@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}About Us - Dantey's Fitness Center{% endblock %}
+{% block main_content %}
+
+<div class="container mt-5">
+  <div class="card mx-auto" style="max-width: 600px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); position: relative;">
+    <div class="card-header text-center bg-primary text-white" style="border-top-left-radius: 10px; border-top-right-radius: 10px;">
+      <h1>{{ coach.name }}</h1>
+    </div>
+    <div class="card-body text-center">
+      <img src="{{ coach.photo.url }}" alt="{{ coach.name }}" class="img-fluid rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
+      <p><strong>Specialization:</strong> {{ coach.specialization }}</p>
+      <p><strong>Experience:</strong> {{ coach.experience }} years</p>
+      <p><strong>Contact:</strong> {{ coach.email }} | {{ coach.phone }}</p>
+      <p><strong>Hourly Rate:</strong> ${{ coach.hourly_rate }}</p>
+
+      {% if coach.workout_video %}
+      <h3 class="mt-4">Workout Video:</h3>
+      <video class="rounded mt-2" width="400" style="max-height: 250px; object-fit: cover;" controls>
+        <source src="{{ coach.workout_video.url }}" type="video/mp4">
+        Your browser does not support the video tag.
+      </video>
+      {% endif %}
+    </div>
+
+    <!-- Hover Effect for Booking -->
+    <div class="booking-overlay d-none" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; border-radius: 10px;">
+      <h3 class="mb-3">Book a Session</h3>
+      <p>Hourly Rate: ${{ coach.hourly_rate }}</p>
+      <a href="{% url 'coaches:book_session' coach.id %}" class="btn btn-primary">Book a Session</a>
+    </div>
+
+    <!-- Navigation and Admin Options -->
+    <div class="card-footer d-flex justify-content-between">
+      <!-- Back to Coaches List -->
+      <a href="{% url 'coaches:coach_list' %}" class="btn btn-secondary">Back to Coaches</a>
+      <a href="{% url 'coaches:book_session' coach.id %}" class="btn btn-primary">Book a Session</a>
+
+      {% if request.user.is_authenticated and request.user.is_staff %}
+        <!-- Admin Edit and Delete Options -->
+        <div class="d-flex gap-2">
+          <a href="{% url 'coaches:coach_edit' coach.id %}" class="btn btn-warning">Edit</a>
+          <form action="{% url 'coaches:coach_confirm_delete' coach.id %}" method="post" style="display: inline;">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Delete</button>
+          </form>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- Include the JavaScript File -->
+<script src="{% static 'coaches/js/coach_hover.js' %}"></script>
+
+{% endblock %}

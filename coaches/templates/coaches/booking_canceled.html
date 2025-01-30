@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block title %}Booking Canceled{% endblock %}
+
+{% block main_content %}
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Your booking has been canceled</h1>
+    <p>We have successfully canceled your booking. Thank you for using our service.</p>
+    <a href="{% url 'home' %}" class="btn btn-primary">Go to Home</a>
+</div>
+{% endblock %}

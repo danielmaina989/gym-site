@@ -10,8 +10,22 @@ class Review(models.Model):
 
     def __str__(self):
         return f"{self.name} - {self.rating}"
-    
+
+
 class Service(models.Model):
+    # Define predefined categories for services
+    YOGA = 'Yoga'
+    CROSSFIT = 'CrossFit'
+    PERSONAL_TRAINER = 'Personal Trainer'
+    NUTRITIONIST = 'Nutritionist'
+
+    SERVICE_CATEGORIES = [
+        (YOGA, 'Yoga'),
+        (CROSSFIT, 'CrossFit'),
+        (PERSONAL_TRAINER, 'Personal Trainer'),
+        (NUTRITIONIST, 'Nutritionist'),
+    ]
+
     name = models.CharField(max_length=100)
     description = models.TextField()
     image = models.ImageField(upload_to='services/')
@@ -19,9 +33,17 @@ class Service(models.Model):
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    
+    # Adding category choices to the service
+    category = models.CharField(
+        max_length=50,
+        choices=SERVICE_CATEGORIES,
+        default=YOGA,
+    )
 
     def __str__(self):
         return self.name
+
 
 class ContactSubmission(models.Model):
     ENQUIRY_TYPE_CHOICES = [

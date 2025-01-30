@@ -1,8 +1,10 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django import forms
-from .models import TrialUser
+from .models import TrialUser, Booking
 from datetime import date, timedelta
+from gym.models import Service
+from coaches.models import Coach
 
 class CustomUserCreationForm(UserCreationForm):
     email = forms.EmailField(required=True, widget=forms.EmailInput(attrs={'placeholder': 'Enter your email'}))
@@ -36,3 +38,25 @@ class TrialUserForm(forms.ModelForm):
             trial_user.save()
         return trial_user
 
+
+
+class BookingForm(forms.ModelForm):
+    class Meta:
+        model = Booking
+        fields = ['service', 'session_date', 'training_time', 'coach']
+        widgets = {
+            'service': forms.Select(attrs={'class': 'form-control'}),
+            'session_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            'training_time': forms.Select(attrs={'class': 'form-control'}),  # Ensure it's included here
+            'coach': forms.Select(attrs={'class': 'form-control'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Ensure training_time choices are set
+        self.fields['training_time'].choices = Booking.TIME_SLOT_CHOICES
+
+        # Customize coach display format
+        self.fields['coach'].queryset = Coach.objects.all()
+        self.fields['coach'].label_from_instance = lambda coach: f"{coach.name} - {coach.specialization}"

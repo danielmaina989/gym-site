@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}Booking Success{% endblock %}
+
+{% block main_content %}
+<div class="container mt-5">
+    <h1 class="text-center">Your booking was successful!</h1>
+    <p class="text-center">Thank you for booking a session. We will contact you soon to confirm the details.</p>
+
+    <div class="alert alert-success mt-4">
+        <h4>Booking Summary</h4>
+        <p><strong>Service:</strong> {{ booking.service.name }}</p>
+        <p><strong>Coach:</strong> {{ booking.coach.name }}</p>
+        <p><strong>Session Date:</strong> {{ booking.session_date }}</p>
+        <p><strong>Session Slotted Time:</strong> {{ booking.training_time }}</p>
+        <p><strong>Additional Info:</strong> {{ booking.additional_info|default:"N/A" }}</p>
+    </div>
+
+    <div class="text-center mt-4">
+        <a href="{% url 'gym:index' %}" class="btn btn-primary">Return to Home</a>
+    </div>
+</div>
+{% endblock %}

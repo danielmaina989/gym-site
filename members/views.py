@@ -1,8 +1,8 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.views import LoginView, LogoutView
 from django.views.generic.edit import FormView, CreateView
-from django.views.generic import TemplateView
-from .forms import CustomUserCreationForm, TrialUserForm
+from django.views.generic import TemplateView, View
+from .forms import CustomUserCreationForm, TrialUserForm, BookingForm
 from django.urls import reverse_lazy
 from django.contrib.auth import login
 from django.http import HttpResponseRedirect
@@ -10,6 +10,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from datetime import date
 from .models import TrialUser
+from gym.models import Service
 
 
 
@@ -60,3 +61,33 @@ def update_trial_status():
             trial.save()
 
 
+# View to handle booking the session
+
+class BookSessionView(View):
+    def post(self, request, *args, **kwargs):
+        """Handles booking form submission"""
+        # Get service_id from the POST data
+        service_id = request.POST.get('service_id')
+        
+        # If service_id is not provided, return an error
+        if not service_id:
+            return render(request, 'members/book_session.html', {'error': 'Service ID is missing!'})
+
+        # Retrieve the Service object based on the service_id
+        service = get_object_or_404(Service, id=service_id)
+        
+        # Initialize the booking form with POST data
+        form = BookingForm(request.POST)
+        
+        if form.is_valid():
+            # Save the form without committing to the database
+            booking = form.save(commit=False)
+            booking.service = service  # Associate the booking with the selected service
+            booking.user = request.user  # Associate the booking with the logged-in user
+            booking.save()  # Save the booking object
+            
+            # Redirect to the booking success page after saving
+            return redirect(reverse_lazy('members:booking_success'))  
+        
+        # If the form is not valid, re-render the page with the form and service details
+        return render(request, 'members/book_session.html', {'form': form, 'service': service})

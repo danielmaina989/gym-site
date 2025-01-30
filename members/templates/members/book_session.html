@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block main_content %}
+    <h2>{{ service.name }}</h2>
+    <p>{{ service.description }}</p>
+    {% if service.price_per_session %}
+        <p><strong>Price per session:</strong> ${{ service.price_per_session }}</p>
+    {% endif %}
+    
+    <!-- Display any error message -->
+    {% if error %}
+        <div class="alert alert-danger">{{ error }}</div>
+    {% endif %}
+    
+    <form method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="service_id" value="{{ service.id }}">
+        
+        <!-- Add other form fields here, e.g., session date -->
+        <div class="form-group">
+            <label for="session-date">Select Date</label>
+            <input type="date" class="form-control" id="session-date" name="session_date" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Confirm Booking</button>
+    </form>
+{% endblock %}

@@ -76,25 +76,38 @@
 <!-- -----------services---------- -->
 <section id="services" class="my-5">
     <div class="container">
+        <div class="row text-center mb-4">
+            <div class="col-12">
+                <h2 class="section-heading text-primary">Our Services</h2>
+                <p class="section-description text-muted">Explore the wide range of services we offer to help you achieve your fitness goals. Whether you're looking for personal training or group workouts, we have something for everyone.</p>
+            </div>
+        </div>
         <div class="row">
             {% for service in services %}
             <div class="col-md-4 mb-4">
                 <div class="card shadow-sm service-card h-100">
-                    <img src="{{ service.image.url }}" class="card-img-top service-img" alt="{{ service.name }}">
                     <div class="card-body text-center">
                         <h5 class="service-title text-primary">{{ service.name }}</h5>
                         <p class="service-description">{{ service.description }}</p>
                         {% if service.price_per_session %}
                         <p class="text-muted">Price per session: ${{ service.price_per_session }}</p>
                         {% endif %}
-                        <a href="#" class="btn btn-primary service-link">Book a Session</a>
+                        <a href="{% url 'gym:service_detail' service.id %}" class="btn btn-primary service-link">Read More</a>
                     </div>
                 </div>
             </div>
             {% endfor %}
         </div>
+
+        <!-- Link to View All Services -->
+        <div class="row">
+            <div class="col-12 text-center">
+                <a href="{% url 'gym:service_list' %}" class="btn btn-secondary mt-4">View All Services</a>
+            </div>
+        </div>
     </div>
 </section>
+
 
 
 <!-- features -->
@@ -104,51 +117,26 @@
             <div class="col-md-12 text-center">
                 <h2>Meet Our Coaches</h2>
                 <div class="row">
-                    <!-- Yoga -->
-                    <div class="col-md-4 mb-4">
-                        <div class="card shadow-sm coach-card h-100">
-                            <img src="coach_yoga.jpg" class="card-img-top" alt="Yoga Coach">
-                            <div class="card-body text-center">
-                                <h4 class="coach-title text-primary">Yoga Coaches</h4>
-                                <p class="coach-description text-primary">Helping you find balance, flexibility, and
-                                    peace through mindful practices.</p>
-                                <p class="coach-pay text-primary"><strong>Pay per Hour:</strong> $30</p>
-                                <a href="#" class="btn btn-primary coach-link">Book a Session</a>
+                    {% for coach in coaches %}
+                        <div class="col-md-4 mb-4">
+                            <div class="card shadow-sm coach-card h-100">
+                                <img src="{{ coach.photo.url }}" class="card-img-top" alt="{{ coach.name }}">
+                                <div class="card-body text-center">
+                                    <h4 class="coach-title text-primary">{{ coach.name }}</h4>
+                                    <p class="coach-description text-primary">{{ coach.specialization }}</p>
+                                    <p class="coach-pay text-primary"><strong>Pay per Hour:</strong> ${{ coach.hourly_rate }}</p>
+                                    <a href="{% url 'coaches:book_session' coach.id %}" class="btn btn-primary coach-link">Book a Session</a>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <!-- CrossFit -->
-                    <div class="col-md-4 mb-4">
-                        <div class="card shadow-sm coach-card h-100">
-                            <img src="coach_crossfit.jpg" class="card-img-top" alt="CrossFit Coach">
-                            <div class="card-body text-center">
-                                <h4 class="coach-title text-primary">CrossFit Coaches</h4>
-                                <p class="coach-description text-primary">Push your limits with high-intensity
-                                    functional training.</p>
-                                <p class="coach-pay text-primary"><strong>Pay per Hour:</strong> $40</p>
-                                <a href="#" class="btn btn-primary coach-link">Book a Session</a>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Personal Trainer -->
-                    <div class="col-md-4 mb-4">
-                        <div class="card shadow-sm coach-card h-100">
-                            <img src="coach_personal.jpg" class="card-img-top" alt="Personal Trainer">
-                            <div class="card-body text-center">
-                                <h4 class="coach-title text-primary">Personal Trainers</h4>
-                                <p class="coach-description text-primary">Achieve your fitness goals with personalized
-                                    one-on-one training.</p>
-                                <p class="coach-pay text-primary"><strong>Pay per Hour:</strong> $50</p>
-                                <a href="#" class="btn btn-primary coach-link">Book a Session</a>
-                            </div>
-                        </div>
-                    </div>
+                    {% endfor %}
                 </div>
-                <a href="#" class="btn btn-secondary mt-3">View All Coaches</a>
+                <a href="{%url 'coaches:coach_list'%}" class="btn btn-secondary mt-3">View All Coaches</a>
             </div>
         </div>
     </div>
 </section>
+
 
 <!-- blog -->
 <section id="blog" class="my-5">

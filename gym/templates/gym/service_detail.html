@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block main_content %}
+    <div class="container mt-5">
+        <!-- Box with border and padding -->
+        <div class="border p-4 rounded shadow-sm">
+            <h2 class="text-center mb-4">{{ service.name }}</h2>
+
+            <!-- Service Image -->
+            <div class="text-center mb-4">
+                <img src="{{ service.image.url }}" class="img-fluid rounded shadow" alt="{{ service.name }}">
+            </div>
+
+            <!-- Service Description -->
+            <p class="lead">{{ service.description }}</p>
+
+            {% if service.price_per_session %}
+                <p><strong>Price per session:</strong> <span class="text-success">${{ service.price_per_session }}</span></p>
+            {% endif %}
+
+            <!-- Action Buttons -->
+            <div class="mt-4 d-flex justify-content-around">
+                <a href="{% url 'gym:service_list' %}" class="btn btn-secondary btn-lg">Back to Service List</a>
+                <a href="{% url 'gym:service_edit' service.id %}" class="btn btn-warning btn-lg">Edit Service</a>
+                <a href="{% url 'gym:service_delete' service.id %}" class="btn btn-danger btn-lg" onclick="return confirm('Are you sure you want to delete this service?');">Delete Service</a>
+            </div>
+        </div>
+    </div>
+{% endblock %}
