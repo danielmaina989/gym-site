@@ -1,11 +1,13 @@
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, get_object_or_404, redirect, HttpResponse
 from django.views.generic import TemplateView,ListView, DetailView, FormView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from django.contrib.auth.mixins import UserPassesTestMixin
+from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 from .models import Coach
 from .forms import CoachForm, BookingForm
 from django.urls import reverse_lazy, reverse
 from members.models import Booking
+from django.http import Http404
+from django.core.exceptions import PermissionDenied
 
 
 class CoachListView(ListView):
@@ -48,30 +50,34 @@ class CoachDeleteView(UserPassesTestMixin, DeleteView):
         return self.request.user.is_staff
     
 
-class BookSessionView(FormView):
+
+class BookSessionView(LoginRequiredMixin, FormView):
     form_class = BookingForm
     template_name = 'coaches/book_session.html'
+    login_url = '/accounts/login/'  # Redirect to login if not authenticated
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        form = self.get_form()
-        print("Form fields:", form.fields.keys())  # Check if training_time is included
-        print("Training Time Field:", form.fields.get("training_time"))
-        print("Form fields before rendering:", form.fields.keys())
         coach_id = self.kwargs['coach_id']
         coach = get_object_or_404(Coach, id=coach_id)
-        context['booking'] = Booking.objects.all()
-        context['coach'] = coach  # No need to override form here
+
+        if self.request.user.is_authenticated:
+            user_bookings = Booking.objects.filter(user=self.request.user, coach=coach)
+        else:
+            user_bookings = Booking.objects.none()  # No bookings if user is not authenticated
+
+        context['bookings'] = user_bookings
+        context['coach'] = coach
         return context
 
-
     def form_valid(self, form):
-        # Save the booking and associate it with the service, coach, and user
+        if not self.request.user.is_authenticated:
+            return redirect(self.login_url)
+
         booking = form.save(commit=False)
         booking.user = self.request.user
         booking.save()
         
-        # Redirect to the success page with the booking_id
         return redirect(reverse('coaches:booking_success', kwargs={'booking_id': booking.id}))
 
 class BookingSuccessView(TemplateView):
@@ -85,14 +91,28 @@ class BookingSuccessView(TemplateView):
         context['booking'] = booking  # Pass the booking object to the template
         return context
     
+# views.py
+
+class BookingListView(LoginRequiredMixin, ListView):
+    model = Booking
+    template_name = 'coaches/booking_list.html'
+    context_object_name = 'bookings'
+
+    def get_queryset(self):
+        # Fetch bookings for the logged-in user
+        return Booking.objects.filter(user=self.request.user)
+
 class CancelBookingView(DeleteView):
     model = Booking
     template_name = 'coaches/confirm_cancellation.html'
     context_object_name = 'booking'
-    success_url = reverse_lazy('coaches:booking_canceled')  # Redirect to a cancellation confirmation page after success
+    success_url = reverse_lazy('coaches:booking_list')  # Redirect after deletion
 
-    def delete(self, request, *args, **kwargs):
-        booking = self.get_object()
-        # Optional: You can change the status of the booking instead of deleting
-        booking.delete()  # Or update status like booking.status = 'canceled' and then save
-        return super().delete(request, *args, **kwargs)
+    def get_object(self, queryset=None):
+        """
+        Override get_object to fetch the Booking instance using 'booking_id' from the URL.
+        """
+        booking_id = self.kwargs.get("booking_id")
+        if not booking_id:
+            raise Http404("Booking ID not provided")
+        return get_object_or_404(Booking, id=booking_id)

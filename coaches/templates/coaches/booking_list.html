@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %}Your Bookings{% endblock %}
+
+{% block main_content %}
+<div class="container mt-5 text-center">
+    <h1 class="text-center mb-4">Your Active Bookings</h1>
+
+    <!-- Display the total number of bookings -->
+    <p class="text-center mb-4">You have {{ bookings|length }} active bookings.</p>
+
+    {% if bookings %}
+    <div class="row ">
+        {% for booking in bookings %}
+        <div class="col-md-4 mb-4 text-center"> <!-- Each booking takes up 4 columns on medium screens -->
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{{ booking.service }} with {{ booking.coach }}</h5>
+                    <p class="card-text">Session Date: {{ booking.session_date }} at {{ booking.training_time }}</p>
+
+                    <!-- Link to Cancel Booking -->
+                    <a href="{% url 'coaches:confirm_cancellation' booking.pk %}" class="btn btn-danger mt-2">Cancel
+                        Booking</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p>You have no active bookings.</p>
+    {% endif %}
+    <a href="{% url 'gym:index' %}" class="btn btn-primary mt-2">Back Home</a>
+
+</div>
+{% endblock %}
