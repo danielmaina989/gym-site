@@ -1,33 +1,31 @@
 {% extends 'base.html' %}
 
+{% block title %}Add a New Coach{% endblock %}
+
 {% block main_content %}
 <div class="container mt-5">
-    <h1 class="text-center mb-4">Book a Session with {{ coach.name }}</h1>
-
-    <form method="post">
-        {% csrf_token %}
-        
-        <div class="form-group mb-3">
-            <label for="service">Service</label>
-            {{ form.service }}
+    <h1 class="text-center mb-4">Add a New Coach</h1>
+    
+    <!-- Display form errors if any -->
+    {% if form.errors %}
+        <div class="alert alert-danger">
+            {% for field in form %}
+                {% for error in field.errors %}
+                    <p>{{ field.label }}: {{ error }}</p>
+                {% endfor %}
+            {% endfor %}
+            {% for error in form.non_field_errors %}
+                <p>{{ error }}</p>
+            {% endfor %}
         </div>
+    {% endif %}
 
-        <div class="form-group mb-3">
-            <label for="session_date">Preferred Date</label>
-            {{ form.session_date }}
-        </div>
-
-        <div class="form-group mb-3">
-            <label for="training_time">Preferred Time</label>
-            {{ form.training_time }}
-        </div>
-
-        <div class="form-group mb-3">
-            <label for="coach">Choose Coach</label>
-            {{ form.coach }}
-        </div>
-
-        <button type="submit" class="btn btn-primary">Submit</button>
-    </form>
+    <div class="card shadow-lg p-4 border rounded">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary w-100">Submit</button>
+        </form>
+    </div>
 </div>
 {% endblock %}

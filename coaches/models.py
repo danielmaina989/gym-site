@@ -15,7 +15,7 @@ class Coach(models.Model):
     phone = models.CharField(max_length=15)
     photo = models.ImageField(upload_to='coaches_photos/', null=True, blank=True)
     workout_video = models.FileField(upload_to='coaches_videos/', null=True, blank=True)
-    hourly_rate = models.DecimalField(max_digits=6, decimal_places=2)
+    hourly_rate = models.DecimalField(max_digits=6, decimal_places=2, default=0.00)
     resume = models.FileField(upload_to='nutritionist_resumes/', null=True, blank=True, help_text="Required for Nutritionists")
 
     def __str__(self):

@@ -2,11 +2,37 @@
 from django import forms
 from .models import Coach
 from members.models import Booking
+from django import forms
+from django.core.exceptions import ValidationError
+from datetime import date
+
+
+from django import forms
+from .models import Coach
 
 class CoachForm(forms.ModelForm):
     class Meta:
         model = Coach
-        fields = ['name', 'specialization', 'experience', 'email', 'phone', 'photo', 'workout_video', 'hourly_rate', 'resume']
+        fields = [
+            'name', 
+            'specialization', 
+            'experience', 
+            'email', 
+            'phone', 
+            'photo', 
+            'workout_video', 
+            'hourly_rate', 
+            'resume'
+        ]
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control'}),
+            'specialization': forms.Select(attrs={'class': 'form-control'}),
+            'experience': forms.NumberInput(attrs={'class': 'form-control'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control'}),
+            'phone': forms.TextInput(attrs={'class': 'form-control'}),
+            'hourly_rate': forms.NumberInput(attrs={'class': 'form-control'}),
+            # photo, workout_video, and resume will use default file inputs
+        }
 
     def clean(self):
         cleaned_data = super().clean()
@@ -16,17 +42,7 @@ class CoachForm(forms.ModelForm):
         if specialization == 'Nutritionist' and not resume:
             raise forms.ValidationError("A resume is required for Nutritionists.")
         return cleaned_data
-        
-
-
-from django import forms
-from django.core.exceptions import ValidationError
-from datetime import date
-
-from django import forms
-from django.core.exceptions import ValidationError
-from datetime import date
-from members.models import Booking, Coach
+      
 
 class BookingForm(forms.ModelForm):
     class Meta:

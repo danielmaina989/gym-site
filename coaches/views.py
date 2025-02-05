@@ -3,11 +3,15 @@ from django.views.generic import TemplateView,ListView, DetailView, FormView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 from .models import Coach
+from gym.models import Service
 from .forms import CoachForm, BookingForm
 from django.urls import reverse_lazy, reverse
-from members.models import Booking
+from members.models import Booking, TrialUser, Membership
 from django.http import Http404
+from django.contrib import messages
 from django.core.exceptions import PermissionDenied
+from django.utils.timezone import now
+import logging
 
 
 class CoachListView(ListView):
@@ -50,35 +54,54 @@ class CoachDeleteView(UserPassesTestMixin, DeleteView):
         return self.request.user.is_staff
     
 
+# Set up a logger
+logger = logging.getLogger(__name__)
 
 class BookSessionView(LoginRequiredMixin, FormView):
     form_class = BookingForm
     template_name = 'coaches/book_session.html'
-    login_url = '/accounts/login/'  # Redirect to login if not authenticated
+    login_url = '/accounts/login/'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         coach_id = self.kwargs['coach_id']
         coach = get_object_or_404(Coach, id=coach_id)
-
-        if self.request.user.is_authenticated:
-            user_bookings = Booking.objects.filter(user=self.request.user, coach=coach)
-        else:
-            user_bookings = Booking.objects.none()  # No bookings if user is not authenticated
+        user_bookings = Booking.objects.filter(user=self.request.user, coach=coach)
 
         context['bookings'] = user_bookings
         context['coach'] = coach
         return context
 
     def form_valid(self, form):
-        if not self.request.user.is_authenticated:
-            return redirect(self.login_url)
+        user = self.request.user
+        context = self.get_context_data()  # Get context for rendering the template
 
+        # Check if user has a membership
+        membership = Membership.objects.filter(user=user).first()
+        if not membership:
+            context['error_message'] = "You need a membership to book a session."
+            context['membership_link'] = 'members:membership_page'  # Link to the membership page
+            return self.render_to_response(context)  # Return to the same page with error message
+
+        # Check if membership is still active
+        if not membership.is_active():
+            context['error_message'] = "Your membership has expired. Please renew."
+            context['membership_link'] = 'members:membership_page'
+            return self.render_to_response(context)
+
+        # Prevent multiple bookings on the same day
+        session_date = form.cleaned_data['session_date']
+        if Booking.objects.filter(user=user, session_date=session_date).exists():
+            context['error_message'] = "You already have a session booked for this date."
+            return self.render_to_response(context)
+
+        # Save the booking
         booking = form.save(commit=False)
-        booking.user = self.request.user
+        booking.user = user
         booking.save()
-        
-        return redirect(reverse('coaches:booking_success', kwargs={'booking_id': booking.id}))
+
+        messages.success(self.request, "Your booking was successful!")
+        return redirect('coaches:booking_success', booking_id=booking.id)
 
 class BookingSuccessView(TemplateView):
     template_name = 'coaches/booking_success.html'
@@ -91,16 +114,29 @@ class BookingSuccessView(TemplateView):
         context['booking'] = booking  # Pass the booking object to the template
         return context
     
-# views.py
-
 class BookingListView(LoginRequiredMixin, ListView):
     model = Booking
     template_name = 'coaches/booking_list.html'
     context_object_name = 'bookings'
+    login_url = '/accounts/login/'
 
     def get_queryset(self):
-        # Fetch bookings for the logged-in user
-        return Booking.objects.filter(user=self.request.user)
+        """
+        Retrieve only the bookings for the logged-in user.
+        """
+        return Booking.objects.filter(user=self.request.user).order_by('-session_date')
+
+    def get_context_data(self, **kwargs):
+        """
+        Split bookings into past and upcoming based on session date.
+        """
+        context = super().get_context_data(**kwargs)
+        bookings = self.get_queryset()
+
+        context['upcoming_bookings'] = bookings.filter(session_date__gte=now())
+        context['past_bookings'] = bookings.filter(session_date__lt=now())
+
+        return context
 
 class CancelBookingView(DeleteView):
     model = Booking

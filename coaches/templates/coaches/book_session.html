@@ -6,31 +6,15 @@
 <div class="container mt-5">
     <h1 class="text-center mb-4">Book a Session with {{ coach.name }}</h1>
 
-    {% if bookings %}
-    <div class="container mb-4">
-        <h4 class="text-center alert alert-info">Your Active Bookings</h4>
-
-        <div class="row">
-            {% for booking in bookings %}
-            <div class="col-md-6 col-lg-4 mb-3">
-                <div class="card shadow-sm p-3 border rounded">
-                    <h5 class="text-primary text-center">{{ booking.service.name }}</h5>
-                    <p><strong>Coach:</strong> {{ booking.coach.name }}</p>
-                    <p><strong>Session Date:</strong> {{ booking.session_date }}</p>
-                    <p><strong>Training Time:</strong> {{ booking.training_time }}</p>
-
-                    <!-- Cancel Booking Button -->
-                    {% if booking.pk %}
-                    <a href="{% url 'coaches:confirm_cancellation' booking.pk %}" class="btn btn-danger btn-sm w-100">Cancel
-                        Booking</a>
-                    {% endif %}
-                </div>
-            </div>
-            {% endfor %}
+    <!-- Display error messages -->
+    {% if error_message %}
+        <div class="alert alert-danger">
+            <p>{{ error_message }}</p>
+            {% if membership_link %}
+                <p><a href="{% url membership_link %}" class="btn btn-link">Go to Membership Page</a></p>
+            {% endif %}
         </div>
-    </div>
     {% endif %}
-
 
     <!-- Booking Form -->
     <div class="card shadow-lg p-4 border rounded">

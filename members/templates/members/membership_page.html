@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block main_content %}
+<div class="container">
+    <h2 class="text-center mt-4">Membership Options</h2>
+
+    <!-- Display Active Membership -->
+    {% if membership %}
+    <p>Your current membership: <strong>{{ membership.membership_type }}</strong></p>
+    <p>Started on: <strong>{{ membership.start_date }}</strong></p>
+    <p>Valid until: <strong>{{ membership.end_date }}</strong></p>
+    {% if membership.membership_type == "trial" %}
+    <p class="text-warning">Your free trial is active. It started on {{ membership.start_date }} and will expire on {{ membership.end_date }}.</p>
+    {% elif membership.membership_type == "basic" %}
+    <p>Your basic membership is active.</p>
+    {% elif membership.membership_type == "premium" %}
+    <p>Your premium membership is active.</p>
+    {% endif %}
+    {% else %}
+    <p>You do not have an active membership. <a href="{% url 'members:trial_signup' %}">Sign up here</a>.</p>
+    {% endif %}
+
+
+    <!-- Membership Plans -->
+    <div class="row mt-4">
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">14-Day Free Trial</h5>
+                    <p class="card-text">Experience all the benefits for free for 14 days.</p>
+                    {% if not membership or membership.membership_type == 'trial' %}
+                    <a href="{% url 'members:activate_trial' %}" class="btn btn-primary">Start Free Trial</a>
+                    {% else %}
+                    <button class="btn btn-secondary" disabled>Trial Already Used</button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Basic Membership</h5>
+                    <p class="card-text">$30/month - Access to gym facilities & group classes.</p>
+                    <a href="{% url 'members:subscribe_membership' 'basic' %}" class="btn btn-success">Upgrade to
+                        Basic</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Premium Membership</h5>
+                    <p class="card-text">$50/month - Includes personal coaching & premium access.</p>
+                    <a href="{% url 'members:subscribe_membership' 'premium' %}" class="btn btn-danger">Upgrade to
+                        Premium</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Renew Membership Option -->
+    {% if membership and membership.end_date and membership.is_active %}
+    <div class="text-center mt-4">
+        <a href="{% url 'members:renew_membership' %}" class="btn btn-warning">Renew Membership</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -4,32 +4,55 @@
 
 {% block main_content %}
 <div class="container mt-5 text-center">
-    <h1 class="text-center mb-4">Your Active Bookings</h1>
+    <h1 class="text-center mb-4">Your Bookings</h1>
 
     <!-- Display the total number of bookings -->
-    <p class="text-center mb-4">You have {{ bookings|length }} active bookings.</p>
+    <p class="text-center mb-4">
+        You have {{ upcoming_bookings|length }} active bookings and {{ past_bookings|length }} past bookings.
+    </p>
 
-    {% if bookings %}
-    <div class="row ">
-        {% for booking in bookings %}
-        <div class="col-md-4 mb-4 text-center"> <!-- Each booking takes up 4 columns on medium screens -->
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">{{ booking.service }} with {{ booking.coach }}</h5>
-                    <p class="card-text">Session Date: {{ booking.session_date }} at {{ booking.training_time }}</p>
+    <!-- Active Bookings Section -->
+    <h3 class="mt-4">Upcoming Sessions</h3>
+    {% if upcoming_bookings %}
+        <div class="row">
+            {% for booking in upcoming_bookings %}
+                <div class="col-md-4 mb-4 text-center">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ booking.service }} with {{ booking.coach }}</h5>
+                            <p class="card-text">Session Date: {{ booking.session_date }} at {{ booking.training_time }}</p>
 
-                    <!-- Link to Cancel Booking -->
-                    <a href="{% url 'coaches:confirm_cancellation' booking.pk %}" class="btn btn-danger mt-2">Cancel
-                        Booking</a>
+                            <!-- Link to Cancel Booking -->
+                            <a href="{% url 'coaches:confirm_cancellation' booking.pk %}" class="btn btn-danger mt-2">Cancel Booking</a>
+                        </div>
+                    </div>
                 </div>
-            </div>
+            {% endfor %}
         </div>
-        {% endfor %}
-    </div>
     {% else %}
-    <p>You have no active bookings.</p>
+        <p>You have no upcoming sessions.</p>
     {% endif %}
-    <a href="{% url 'gym:index' %}" class="btn btn-primary mt-2">Back Home</a>
 
+    <!-- Past Bookings Section -->
+    <h3 class="mt-5">Past Sessions</h3>
+    {% if past_bookings %}
+        <div class="row">
+            {% for booking in past_bookings %}
+                <div class="col-md-4 mb-4 text-center">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ booking.service }} with {{ booking.coach }}</h5>
+                            <p class="card-text">Session Date: {{ booking.session_date }} at {{ booking.training_time }}</p>
+                            <button class="btn btn-secondary" disabled>Completed</button>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>You have no past sessions.</p>
+    {% endif %}
+
+    <a href="{% url 'gym:index' %}" class="btn btn-primary mt-4">Back Home</a>
 </div>
 {% endblock %}

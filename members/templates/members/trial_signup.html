@@ -1,13 +1,34 @@
 {% extends 'base.html' %}
 
-{% block title %}Start Your Trial{% endblock %}
-
 {% block main_content %}
-<h1>Start Your 14-Day Free Trial</h1>
-<p>Sign up to begin your fitness journey!</p>
-<form method="POST">
-    {% csrf_token %}
-    <!-- Add your form fields here -->
-    <button type="submit" class="btn btn-primary">Sign Up</button>
-</form>
+<div class="container mt-5">
+    <h1 class="text-center">Sign Up for Your Free Trial</h1>
+
+    {% if messages %}
+        <div class="alert alert-danger">
+            {% for message in messages %}
+                <p>{{ message }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <div class="card shadow-lg p-4 border rounded">
+        <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="fullName" class="form-label">Full Name</label>
+                <input type="text" class="form-control" id="fullName" name="full_name" required>
+            </div>
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-control" id="email" name="email" required>
+            </div>
+            <div class="mb-3">
+                <label for="phone" class="form-label">Phone Number</label>
+                <input type="tel" class="form-control" id="phone" name="phone_number">
+            </div>
+            <button type="submit" class="btn btn-success w-100">Start Free Trial</button>
+        </form>
+    </div>
+</div>
 {% endblock %}
