@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block main_content %}
+<div class="container mt-5">
+    <h2 class="mb-4">Reply to Enquiry</h2>
+    <p><strong>From:</strong> {{ object.name }} ({{ object.email }})</p>
+    <p><strong>Type:</strong> {{ object.get_enquiry_type_display }}</p>
+    <p><strong>Message:</strong> {{ object.message }}</p>
+
+    <h4 class="mt-4">Previous Reply (if any):</h4>
+    {% if object.is_replied %}
+        <div class="alert alert-info">{{ object.admin_reply }}</div>
+    {% else %}
+        <p>No reply yet</p>
+    {% endif %}
+
+    <form method="post" class="mt-4">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="admin_reply">Your Reply</label>
+            {{ form.admin_reply }}
+        </div>
+        <button type="submit" class="btn btn-success mt-3">Send Reply</button>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block main_content %}
+<div class="container mt-5">
+    <h2 class="mb-4">Manage Enquiries</h2>
+
+    <table class="table table-bordered table-striped">
+        <thead class="thead-dark">
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Enquiry Type</th>
+                <th>Status</th>
+                <th>Reply</th>
+                <th>Follow-Up</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for enquiry in enquiries %}
+            <tr>
+                <td>{{ enquiry.name }}</td>
+                <td>{{ enquiry.email }}</td>
+                <td>{{ enquiry.get_enquiry_type_display }}</td>
+                <td>
+                    {% if enquiry.is_replied %}
+                        <span class="badge badge-success">Replied</span>
+                    {% else %}
+                        <span class="badge badge-warning">Pending</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if enquiry.is_replied %}
+                        <div class="alert alert-info">{{ enquiry.admin_reply }}</div>
+                    {% else %}
+                        <p>No reply yet</p>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if enquiry.is_replied %}
+                        {% if not enquiry.follow_up %}
+                            <a href="{% url 'admin_dashboard:follow_up' enquiry.pk %}" class="btn btn-info">Add Follow-Up</a>
+                        {% else %}
+                            <span class="badge badge-primary">Follow-Up Sent</span>
+                        {% endif %}
+                    {% else %}
+                        <p>No follow-up available</p>
+                    {% endif %}
+                </td>
+                <td>
+                    <a href="{% url 'admin_dashboard:enquiry_reply' enquiry.pk %}" class="btn btn-primary">Reply</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -45,10 +45,16 @@ class Service(models.Model):
         return self.name
 
 
+from django.db import models
+from django.utils.timezone import now
+
 class ContactSubmission(models.Model):
     ENQUIRY_TYPE_CHOICES = [
         ('enquiry', 'Enquiry'),
         ('complaint', 'Complaint'),
+        ('pricing', 'Pricing'),
+        ('membership', 'Membership'),
+        ('other', 'Other'),
         ('feedback', 'Feedback'),
     ]
 
@@ -57,6 +63,15 @@ class ContactSubmission(models.Model):
     message = models.TextField()
     enquiry_type = models.CharField(max_length=20, choices=ENQUIRY_TYPE_CHOICES, default='enquiry')
     submitted_at = models.DateTimeField(auto_now_add=True)
+
+    # Admin reply fields
+    admin_reply = models.TextField(blank=True, null=True)
+    is_replied = models.BooleanField(default=False)
+    responded_at = models.DateTimeField(blank=True, null=True)
+    
+    # Follow-up fields
+    follow_up = models.TextField(blank=True, null=True)
+    follow_up_at = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
         return f"{self.name} ({self.enquiry_type})"

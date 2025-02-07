@@ -10,6 +10,9 @@ from .forms import ReviewForm, ContactForm, ServiceForm
 from coaches.models import Coach
 from django.views.generic.edit import FormView
 from django.contrib import messages
+from django.core.mail import send_mail
+from django.utils.timezone import now
+from django.conf import settings
 
 
 class HomeView(TemplateView):
@@ -68,9 +71,18 @@ class ContactView(FormView):
     form_class = ContactForm
     success_url = reverse_lazy('gym:about')
 
-
     def form_valid(self, form):
-        form.save()
+        enquiry = form.save()
+
+        # Send email notification to admin
+        send_mail(
+            subject="New Enquiry Submitted",
+            message=f"A new enquiry has been submitted by {enquiry.name}.\n\nMessage: {enquiry.message}\n\nPlease log in to respond.",
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[settings.ADMIN_EMAIL],  # Set this in your settings.py
+            fail_silently=False,
+        )
+
         return super().form_valid(form)
     
 # services

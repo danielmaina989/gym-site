@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block main_content %}
+<div class="container mt-5">
+    <h2 class="mb-4">Follow Up on Enquiry</h2>
+    <p><strong>From:</strong> {{ object.name }} ({{ object.email }})</p>
+    <p><strong>Type:</strong> {{ object.get_enquiry_type_display }}</p>
+    <p><strong>Message:</strong> {{ object.message }}</p>
+
+    <form method="post" class="mt-4">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="follow_up">Follow-Up Message</label>
+            {{ form.follow_up }}
+        </div>
+        <button type="submit" class="btn btn-info mt-3">Send Follow-Up</button>
+    </form>
+</div>
+{% endblock %}

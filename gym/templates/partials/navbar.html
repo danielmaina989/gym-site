@@ -36,12 +36,21 @@
                     <a class="nav-link" href="{% url 'gym_blog:blog_list' %}">BLOG</a>
                 </li>
 
-                <!-- Links visible only to admin or staff -->
-                {% if user.is_staff %}
-                <li class="nav-item">
-                    <a class="nav-link text-danger" href="{% url 'admin_dashboard:index' %}">ADMIN PANEL</a>
-                </li>
-                {% endif %}
+<!-- Links visible only to admin or staff -->
+{% if user.is_staff %}
+<li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle fw-bold text-light bg-dark p-2 rounded" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        ADMIN PANEL
+    </a>
+    <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="adminDropdown">
+        <li><a class="dropdown-item fw-bold text-light" href="{% url 'admin_dashboard:index' %}">Dashboard</a></li>
+        <li><a class="dropdown-item fw-bold text-light" href="{% url 'admin_dashboard:enquiry_list' %}">Manage Enquiries</a></li>
+    </ul>
+</li>
+{% endif %}
+
+
+
                 
                 <!-- Logout option -->
                 <li class="nav-item">
