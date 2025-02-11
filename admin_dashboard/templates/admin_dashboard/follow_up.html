@@ -2,18 +2,26 @@
 
 {% block main_content %}
 <div class="container mt-5">
-    <h2 class="mb-4">Follow Up on Enquiry</h2>
-    <p><strong>From:</strong> {{ object.name }} ({{ object.email }})</p>
-    <p><strong>Type:</strong> {{ object.get_enquiry_type_display }}</p>
-    <p><strong>Message:</strong> {{ object.message }}</p>
-
-    <form method="post" class="mt-4">
+  <div class="card shadow-lg border-secondary">
+    <div class="card-header bg-secondary text-white">
+      <h2 class="mb-0">Follow Up on Enquiry</h2>
+    </div>
+    <div class="card-body">
+      <p><strong>From:</strong> {{ object.name }} ({{ object.email }})</p>
+      <p><strong>Type:</strong> {{ object.get_enquiry_type_display }}</p>
+      <p><strong>Message:</strong></p>
+      <div class="alert alert-light border mb-4">
+        {{ object.message }}
+      </div>
+      <form method="post" class="mt-4">
         {% csrf_token %}
-        <div class="form-group">
-            <label for="follow_up">Follow-Up Message</label>
-            {{ form.follow_up }}
+        <div class="form-group mb-3">
+          <label for="follow_up" class="form-label">Follow-Up Message</label>
+          {{ form.follow_up }}
         </div>
-        <button type="submit" class="btn btn-info mt-3">Send Follow-Up</button>
-    </form>
+        <button type="submit" class="btn btn-info w-100">Send Follow-Up</button>
+      </form>
+    </div>
+  </div>
 </div>
 {% endblock %}

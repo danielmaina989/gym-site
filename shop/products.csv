@@ -1,0 +1,11 @@
+name,description,price,stock,category,available,image_url
+"Adjustable Dumbbells","Set of adjustable dumbbells ranging from 5 to 50 lbs.","150.00","20","Strength Training","True","product_images/dumbells.jpg"
+"Yoga Mat","Non-slip yoga mat with 6mm thickness.","25.00","50","Yoga","True","product_images/yoga-mat.jpeg"
+"Treadmill","Foldable electric treadmill with multiple speed settings.","600.00","10","Cardio Equipment","True","product_images/treadmill-home-foldable.webp"
+"Kettlebell Set","Set of kettlebells ranging from 10 to 40 lbs.","120.00","15","Strength Training","True","product_images/kettle-bells.jpeg"
+"Resistance Bands","Set of 5 resistance bands with varying tension levels.","20.00","100","Accessories","True","product_images/fitness-resistance-bands.jpg"
+"Exercise Ball","65cm anti-burst exercise ball for stability workouts.","30.00","25","Accessories","True","product_images/medicine-gym-ball.jpg"
+"Pull-Up Bar","Doorway pull-up bar with adjustable width.","35.00","30","Strength Training","True","product_images/doorway-pull-up-bar.jpg"
+"Foam Roller","High-density foam roller for muscle recovery.","18.00","40","Accessories","True","product_images/abdominal-roller.jpeg"
+"Elliptical Machine","Compact elliptical machine with digital display.","700.00","8","Cardio Equipment","True","product_images/elliptical-home-cross-trainer.jpeg"
+"Jump Rope","Speed jump rope with adjustable length.","15.00","60","Accessories","True","product_images/skipping-rope.jpg"

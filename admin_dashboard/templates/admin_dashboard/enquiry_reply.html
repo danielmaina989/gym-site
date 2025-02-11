@@ -2,25 +2,27 @@
 
 {% block main_content %}
 <div class="container mt-5">
-    <h2 class="mb-4">Reply to Enquiry</h2>
-    <p><strong>From:</strong> {{ object.name }} ({{ object.email }})</p>
-    <p><strong>Type:</strong> {{ object.get_enquiry_type_display }}</p>
-    <p><strong>Message:</strong> {{ object.message }}</p>
-
-    <h4 class="mt-4">Previous Reply (if any):</h4>
-    {% if object.is_replied %}
-        <div class="alert alert-info">{{ object.admin_reply }}</div>
-    {% else %}
-        <p>No reply yet</p>
-    {% endif %}
-
-    <form method="post" class="mt-4">
-        {% csrf_token %}
-        <div class="form-group">
-            <label for="admin_reply">Your Reply</label>
-            {{ form.admin_reply }}
+    <div class="card shadow-lg border-primary">
+        <div class="card-header bg-primary text-white">
+            <h2 class="mb-0">Follow Up on Enquiry</h2>
         </div>
-        <button type="submit" class="btn btn-success mt-3">Send Reply</button>
-    </form>
+        <div class="card-body">
+            <p><strong>From:</strong> {{ object.name }} ({{ object.email }})</p>
+            <p><strong>Enquiry Type:</strong> {{ object.get_enquiry_type_display }}</p>
+            <p><strong>Message:</strong></p>
+            <div class="alert alert-light border mb-4">
+                {{ object.message }}
+            </div>
+
+            <form method="post" class="mt-4">
+                {% csrf_token %}
+                <div class="form-group mb-3">
+                    <label for="admin_reply" class="form-label">Your Reply</label>
+                    {{ form.admin_reply }}
+                </div>
+                <button type="submit" class="btn btn-info w-100">Send Reply</button>
+            </form>
+        </div>
+    </div>
 </div>
 {% endblock %}

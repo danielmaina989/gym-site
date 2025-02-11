@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'gym_blog.apps.GymBlogConfig',
     'coaches.apps.CoachesConfig',
     'shop.apps.ShopConfig',
+    'cart.apps.CartConfig',
 ]
 
 MIDDLEWARE = [

@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}Edit Product{% endblock %}
+
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/product_edit.css' %}">
+
+
+{% block main_content %}
+<div class="container mt-5">
+    <h2 class="text-center text-primary fw-bold">Edit Product</h2>
+
+    <div class="card shadow-lg p-4 mt-4">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="mb-3">
+                {{ form.as_p }}
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Save Changes</button>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

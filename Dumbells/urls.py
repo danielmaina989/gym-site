@@ -11,6 +11,7 @@ urlpatterns = [
     path('blog/', include('gym_blog.urls')),  # Blog at /blog/
     path('coaches/', include('coaches.urls')),  # Coaches at /coaches/
     path('shop/', include('shop.urls')),  # Shop at /shop/
+    path("cart/", include("cart.urls", namespace="cart")),
 ]
 
 # Add media file serving in development
