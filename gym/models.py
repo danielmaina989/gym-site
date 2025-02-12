@@ -44,10 +44,6 @@ class Service(models.Model):
     def __str__(self):
         return self.name
 
-
-from django.db import models
-from django.utils.timezone import now
-
 class ContactSubmission(models.Model):
     ENQUIRY_TYPE_CHOICES = [
         ('enquiry', 'Enquiry'),

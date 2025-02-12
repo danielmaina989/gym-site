@@ -35,6 +35,16 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'gym_blog:blog_list' %}">BLOG</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'cart:cart_detail' %}">
+                        🛒 Cart 
+                        {% if cart_items %}
+                            <span class="badge bg-danger">{{ cart_items|length }}</span>
+                        {% endif %}
+                    </a>
+                </li>
+                
+                
 
 <!-- Links visible only to admin or staff -->
 {% if user.is_staff %}

@@ -20,8 +20,10 @@
             <p><strong>Stock:</strong> {{ product.stock }}</p>
             
             {% if product.available %}
-            <a href="{% url 'cart:add_to_cart' product.id %}" class="btn btn-success">Add to Cart</a>
-            {% else %}
+            <button class="btn btn-success add-to-cart-btn" data-product-id="{{ product.id }}">
+                Add to Cart
+            </button>
+                  {% else %}
             <button class="btn btn-secondary" disabled>Out of Stock</button>
             {% endif %}
             
