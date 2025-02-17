@@ -20,11 +20,19 @@
                 {% for item in cart_items %}
                 <tr id="cart-item-{{ item.product.id }}">
                     <td>{{ item.product.name }}</td>
-                    <td>{{ item.quantity }}</td>
-                    <td>${{ item.product.price }}</td>
-                    <td>${{ item.subtotal }}</td>
                     <td>
-                        <button class="btn btn-danger btn-sm remove-from-cart-btn" data-product-id="{{ item.product.id }}">
+                        <!-- ✅ Quantity Input with AJAX -->
+                        <input title="..." type="number" class="form-control quantity-input"
+                               data-product-id="{{ item.product.id }}"
+                               value="{{ item.quantity }}" min="1">
+                    </td>
+                    <td>${{ item.product.price }}</td>
+                    <td class="subtotal" id="subtotal-{{ item.product.id }}">
+                        ${{ item.subtotal }}
+                    </td>
+                    <td>
+                        <button class="btn btn-danger btn-sm remove-from-cart-btn"
+                                data-product-id="{{ item.product.id }}">
                             Remove
                         </button>
                     </td>
@@ -33,9 +41,9 @@
             </tbody>
         </table>
 
-        <!-- ✅ Cart Total Added -->
+        <!-- ✅ Cart Total Updates Automatically -->
         <div class="text-end">
-            <h4><strong>Total: ${{ total_price }}</strong></h4>
+            <h4><strong>Total: $<span id="cart-total">{{ total_price }}</span></strong></h4>
             <a href="{% url 'cart:checkout' %}" class="btn btn-success">Proceed to Checkout</a>
         </div>
 
@@ -50,6 +58,7 @@
         </div>
     {% endif %}
 </div>
+
+<!-- ✅ Include JavaScript -->
+<script src="{% static 'js/cart_quantity.js' %}"></script>
 {% endblock %}
-
-

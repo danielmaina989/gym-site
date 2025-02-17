@@ -6,18 +6,17 @@ from .models import Cart, CartItem
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.views.generic import TemplateView
+import json
 
 
 
 @method_decorator(login_required, name='dispatch')
-
-
 class CartDetailView(View):
     """Display the cart with session-stored items."""
     def get(self, request):
         cart = request.session.get("cart", {})  # Get cart session
 
-        print("🔹 Current Cart Session Data:", cart)  # Debugging output
+        # print("🔹 Current Cart Session Data:", cart)  # Debugging output
 
         cart_items = []
         total_price = 0
@@ -44,9 +43,47 @@ class CartDetailView(View):
         })
 
 
+
+class UpdateCartView(View):
+    """Update quantity of a product in the cart."""
+    
+    def post(self, request, product_id):
+        cart = request.session.get("cart", {})
+        product = get_object_or_404(Product, id=product_id)
+
+        try:
+            data = json.loads(request.body)
+            new_quantity = int(data.get("quantity", 1))
+
+            if new_quantity < 1:
+                return JsonResponse({"error": "Quantity must be at least 1"}, status=400)
+
+            if str(product_id) in cart:
+                cart[str(product_id)]["quantity"] = new_quantity
+            else:
+                return JsonResponse({"error": "Product not found in cart"}, status=400)
+
+            # ✅ Recalculate Total Price
+            total_price = 0
+            for prod_id, item in cart.items():
+                prod = Product.objects.get(id=int(prod_id))
+                item["subtotal"] = float(prod.price) * item["quantity"]
+                total_price += item["subtotal"]
+
+            request.session["cart"] = cart
+            request.session.modified = True
+
+            return JsonResponse({
+                "success": True,
+                "subtotal": cart[str(product_id)]["subtotal"],
+                "total": round(total_price, 2)
+            })
+
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=400)
+
+
 @method_decorator(login_required, name='dispatch')
-
-
 class AddToCartView(View):
     """Add a product to the cart session."""
     def post(self, request, product_id):
