@@ -1,10 +1,10 @@
-{%load static%}
+{% load static %}
 <section id="footer">
     <div class="container">
         <div class="row">
             <div class="col-md-3">
-               <img src="{% static 'images/logo.png' %}" class="footer-logo" alt="logo">
-               <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Dicta error nemo accusantium earum neque, illum atque, voluptas dolor iusto facere nulla, repudiandae asperiores harum.</p>
+                <img src="{% static 'images/logo.png' %}" class="footer-logo" alt="logo">
+                <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Dicta error nemo accusantium earum neque, illum atque, voluptas dolor iusto facere nulla, repudiandae asperiores harum.</p>
             </div>
             <div class="col-md-3">
                 <h1 class="footer-feature">Features</h1>
@@ -12,23 +12,55 @@
                 <p>Free Consultation</p>
                 <p>Flexible Time</p>
                 <p>14 Days Free Trial</p>
-             </div>
-             <div class="col-md-3">
+            </div>
+            <div class="col-md-3">
                 <h1 class="contact">Quick Contacts</h1>
-                <p><i class="fa-solid fa-phone"></i>+254 712378040</p>
-                <p><i class="fa-solid fa-envelope"></i>daniel989@gmail.com</p>
-                <p><i class="fa-solid fa-house"></i>Safari Park Estate.</p>
+                <p><i class="fa-solid fa-phone"></i> +254 712378040</p>
+                <p><i class="fa-solid fa-envelope"></i> daniel989@gmail.com</p>
+                <p><i class="fa-solid fa-house"></i> Safari Park Estate.</p>
                 <p class="city">Nairobi, Kenya</p>
-             </div>
+            </div>
             <div class="col-md-3">
                 <h1 class="contact">Follow Us On</h1>
-                <p><i class="fa-brands fa-facebook"></i>Facebook</p>
-                <p><i class="fa-brands fa-youtube"></i>Youtube</p>
-                <p><i class="fa-brands fa-linkedin-in"></i>Linkedin</p>
-                <p><i class="fa-brands fa-x-twitter"></i>Twitter</p>
-             </div>
+                <p><i class="fa-brands fa-facebook"></i> Facebook</p>
+                <p><i class="fa-brands fa-youtube"></i> YouTube</p>
+                <p><i class="fa-brands fa-linkedin-in"></i> LinkedIn</p>
+                <p><i class="fa-brands fa-x-twitter"></i> Twitter</p>
+            </div>
         </div>
+
         <hr>
+
+        <!-- 🔥 Referral Section (Only for Logged-in Users) -->
+        {% if request.user.is_authenticated %}
+        <div class="text-center mt-4">
+            <h3 class="text-warning">💰 Earn Money with Us!</h3>
+            <p>Refer your friends and earn <strong>5% commission</strong> on every purchase they make.</p>
+    
+            {% with request.user.referrals.first as referral %}
+                {% if referral %}
+                    <!-- User already has a referral code -->
+                    <a href="{% url 'shop:referral_dashboard' %}" class="btn btn-success btn-lg">
+                        Refer & Earn
+                    </a>
+                    <p class="mt-2">Your Referral Link: 
+                        <strong class="text-primary">
+                            {{ referral.referral_link }}
+                        </strong>
+                    </p>
+                {% else %}
+                    <!-- If user has no referral yet, show a signup button -->
+                    <a href="{% url 'shop:referral_dashboard' %}" class="btn btn-primary btn-lg">
+                        Join Our Referral Program
+                    </a>
+                {% endif %}
+            {% endwith %}
+        </div>
+    {% endif %}
+    
+
+        <hr>
+
         <p class="copyright">Copyright @2025. <i class="fa-solid fa-heart"></i> Daniel Maina.</p>
     </div>
 </section>

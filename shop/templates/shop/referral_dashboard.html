@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block main_content %}
+<div class="container mt-5">
+    <h2 class="text-center">Refer & Earn 💰</h2>
+    <p class="text-center">Earn 5% commission on every purchase made by your referrals!</p>
+
+    <div class="text-center">
+        <h4>Your Unique Referral Link:</h4>
+        <input title="..." type="text" class="form-control text-center" id="referral-link" value="{{ referral.referral_link }}" readonly>
+        <button class="btn btn-success mt-3" onclick="copyReferralLink()">Copy Link</button>
+    </div>
+
+    <script>
+        function copyReferralLink() {
+            var copyText = document.getElementById("referral-link");
+            copyText.select();
+            document.execCommand("copy");
+            alert("Referral link copied!");
+        }
+    </script>
+
+    <div class="mt-5 text-center">
+        <h4>Invite a Friend 📩</h4>
+        <form method="POST" action="{% url 'shop:send_referral_email' %}">
+            {% csrf_token %}
+            <input type="email" name="email" class="form-control mb-3" placeholder="Enter friend's email" required>
+            <button type="submit" class="btn btn-primary">Send Invitation</button>
+        </form>
+    </div>
+
+    {% if user.is_staff or user.is_superuser %}
+    <div class="mt-5">
+        <h4 class="text-center">Referral Management</h4>
+        <p class="text-center">
+            <a href="{% url 'shop:referral_list' %}" class="btn btn-info">View All Affiliates</a>
+        </p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -7,6 +7,13 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.views.generic import TemplateView
 import json
+from django.contrib import messages
+from django.views import View
+from django.db import transaction
+from shop.models import Order, Refferral
+from decimal import Decimal
+from django.contrib.auth.mixins import LoginRequiredMixin
+from members.models import  Profile
 
 
 
@@ -136,5 +143,44 @@ class RemoveFromCartView(View):
         return JsonResponse({"error": "Product not found in cart"}, status=400)
 
 
-class CheckoutView(TemplateView):
-    template_name = "cart/checkout.html"
+class CheckoutView(LoginRequiredMixin, View):
+    def get(self, request, *args, **kwargs):
+        """Display checkout page with cart details."""
+        cart = request.session.get("cart", {})
+        total_price = sum(item["price"] * item["quantity"] for item in cart.values())
+
+        return render(request, "checkout.html", {"cart": cart, "total_price": total_price})
+
+    def post(self, request, *args, **kwargs):
+        """Process checkout and apply referral commission."""
+        cart = request.session.get("cart", {})
+
+        if not cart:
+            messages.error(request, "Your cart is empty!")
+            return redirect("cart_summary")  # Redirect back to cart
+
+        total_price = sum(item["price"] * item["quantity"] for item in cart.values())
+
+        with transaction.atomic():  # Ensures atomic transaction
+            # ✅ Create order
+            order = Order.objects.create(user=request.user, total_price=total_price)
+
+            # ✅ Apply referral commission (5% of total purchase)
+            referral = Refferral.objects.filter(referred_user=request.user, status="Joined").first()
+            if referral:
+                referrer = referral.referrer
+                commission = total_price * 0.05
+
+                # ✅ Assuming referrer has a profile with an earnings field
+                referrer_profile = Profile.objects.get(user=referrer)
+                referrer_profile.earnings += commission
+                referrer_profile.save()
+
+                referral.status = "Completed"
+                referral.save()
+
+            # ✅ Clear cart after checkout
+            request.session["cart"] = {}
+
+        messages.success(request, "Checkout successful! Your order has been placed.")
+        return redirect("order_success")  # Redirect to success page

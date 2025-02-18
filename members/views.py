@@ -16,6 +16,11 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils import timezone
 from django.core.mail import send_mail
+from django.urls import reverse_lazy
+from django.views.generic import CreateView
+from django.contrib.auth.models import User
+from shop.models import Refferral
+from .forms import CustomUserCreationForm
 
 
 
@@ -28,10 +33,29 @@ class CustomLoginView(LoginView):
         return reverse_lazy('gym:index')
 
 # Register View
+
 class RegisterView(CreateView):
     form_class = CustomUserCreationForm
     template_name = 'members/register.html'
     success_url = reverse_lazy('members:login')
+
+    def form_valid(self, form):
+        """Associates referred users with their referrer."""
+        response = super().form_valid(form)
+        referral_code = self.request.GET.get("ref") or form.cleaned_data.get("referral_code")
+
+        if referral_code:
+            try:
+                referral = get_object_or_404(Refferral, referral_code=referral_code, status="Pending")
+                referral.referred_user = self.object
+                referral.status = "Joined"
+                referral.save()
+            except Refferral.DoesNotExist:
+                pass  # Ignore invalid codes
+
+        return response
+
+
 
 # Logout View
 class CustomLogoutView(LogoutView):

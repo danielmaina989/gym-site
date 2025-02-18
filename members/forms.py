@@ -6,23 +6,55 @@ from datetime import date, timedelta
 from gym.models import Service
 from coaches.models import Coach
 
+from django import forms
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
+from shop.models import Refferral, Affilliate
+
 class CustomUserCreationForm(UserCreationForm):
     email = forms.EmailField(required=True, widget=forms.EmailInput(attrs={'placeholder': 'Enter your email'}))
     first_name = forms.CharField(max_length=30, required=True, widget=forms.TextInput(attrs={'placeholder': 'First Name'}))
     last_name = forms.CharField(max_length=30, required=True, widget=forms.TextInput(attrs={'placeholder': 'Last Name'}))
+    referral_code = forms.CharField(
+        max_length=20,
+        required=False,  # Referral code is optional
+        widget=forms.TextInput(attrs={'placeholder': 'Referral Code (Optional)'}),
+    )
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'first_name', 'last_name', 'password1', 'password2']
+        fields = ['username', 'email', 'first_name', 'last_name', 'password1', 'password2', 'referral_code']
+
+    def clean_referral_code(self):
+        """Validate referral code if provided."""
+        referral_code = self.cleaned_data.get("referral_code")
+        if referral_code:
+            if not Refferral.objects.filter(referral_code=referral_code, status="Pending").exists():
+                raise forms.ValidationError("Invalid referral code.")
+        return referral_code
 
     def save(self, commit=True):
         user = super().save(commit=False)
         user.email = self.cleaned_data['email']
         user.first_name = self.cleaned_data['first_name']
         user.last_name = self.cleaned_data['last_name']
+        
         if commit:
             user.save()
+
+            # ✅ Handle referral logic if referral code exists
+            referral_code = self.cleaned_data.get("referral_code")
+            if referral_code:
+                try:
+                    referral = Refferral.objects.get(referral_code=referral_code, status="Pending")
+                    referral.referred_user = user
+                    referral.status = "Joined"
+                    referral.save()
+                except Refferral.DoesNotExist:
+                    pass  # Ignore if referral doesn't exist (shouldn't happen due to validation)
+
         return user
+
 
 
 class TrialUserForm(forms.ModelForm):

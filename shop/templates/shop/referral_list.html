@@ -1,0 +1,31 @@
+<!-- shop/referral_list.html -->
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Affiliate Program</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>User</th>
+            <th>Referral Code</th>
+            <th>Earnings</th>
+            <th>Referred Users</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for affiliate in affiliates %}
+        <tr>
+            <td>{{ affiliate.user.username }}</td>
+            <td>{{ affiliate.referral_code }}</td>
+            <td>${{ affiliate.total_earnings }}</td>
+            <td>
+                <a href="{% url 'shop:referral_detail' affiliate.id %}" class="btn btn-info btn-sm">
+                    View Referrals
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
