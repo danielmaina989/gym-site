@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block main_content %}
+<div class="container">
+    <h2 class="text-warning">📢 Affiliate Signup</h2>
+    <p>Fill in your payment details to complete your affiliate registration.</p>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="id_bank_name">Bank Name</label>
+            {{ form.bank_name }}
+        </div>
+
+        <div class="mb-3">
+            <label for="id_account_number">Account Number</label>
+            {{ form.account_number }}
+        </div>
+
+        <div class="mb-3">
+            <label for="id_account_holder_name">Account Holder Name</label>
+            {{ form.account_holder_name }}
+        </div>
+
+        <div class="mb-3">
+            <label for="id_payment_method">Payment Method</label>
+            {{ form.payment_method }}
+        </div>
+
+        <button type="submit" class="btn btn-success">Submit Application</button>
+        <a href="{% url 'gym:index' %}" class="btn btn-secondary">Back to Home</a>
+    </form>
+</div>
+{% endblock %}

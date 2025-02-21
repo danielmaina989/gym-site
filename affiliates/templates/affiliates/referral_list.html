@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block main_content %}
+<div class="container">
+    <h2 class="text-warning">👥 Affiliate List</h2>
+    
+    <table class="table">
+        <thead>
+            <tr>
+                <th>User</th>
+                <th>Referral Code</th>
+                <th>Total Referrals</th>
+                <th>Earnings</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for affiliate in affiliates %}
+                <tr>
+                    <td>{{ affiliate.user.username }}</td>
+                    <td>{{ affiliate.referral_code }}</td>
+                    <td>{{ affiliate.referral_set.count }}</td>
+                    <td>${{ affiliate.total_earnings }}</td>
+                    <td>
+                        <a href="{% url 'affiliates:referral_detail' affiliate.id %}" class="btn btn-primary btn-sm">
+                            View Details
+                        </a>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center">No affiliates yet.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

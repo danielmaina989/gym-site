@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'coaches.apps.CoachesConfig',
     'shop.apps.ShopConfig',
     'cart.apps.CartConfig',
+    "affiliates",
 ]
 
 MIDDLEWARE = [

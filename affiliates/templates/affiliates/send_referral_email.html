@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block main_content %}
+<div class="container">
+    <h2 class="text-warning">📩 Invite Friends & Earn</h2>
+    <p>Send an email invite to your friends and start earning commissions.</p>
+
+    <form method="POST">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="email" class="form-label">Friend's Email</label>
+            <input type="email" name="email" class="form-control" placeholder="Enter email" required>
+        </div>
+        <button type="submit" class="btn btn-success">Send Invite</button>
+    </form>
+</div>
+{% endblock %}

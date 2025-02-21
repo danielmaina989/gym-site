@@ -13,9 +13,4 @@ urlpatterns = [
     path('product/<slug:slug>/', views.ProductDetailView.as_view(), name='product_detail'),
     path('<int:pk>/edit/', views.ProductUpdateView.as_view(), name='product_edit'),
     path('<int:pk>/delete/', views.ProductDeleteView.as_view(), name='product_delete'),
-    path("affiliate/dashboard/", views.AffiliateDashboardView.as_view(), name="affiliate_dashboard"),
-    path("dashboard/", views.referral_dashboard, name="referral_dashboard"),
-    path("send-invite/", views.send_referral_email, name="send_referral_email"),
-    path('admin/referrals/', views.ReferralListView.as_view(), name='referral_list'),
-    path("admin/referrals/", views.ReferralDetailView.as_view(), name="referral_list"),
 ]

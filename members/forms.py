@@ -5,11 +5,10 @@ from .models import TrialUser, Booking
 from datetime import date, timedelta
 from gym.models import Service
 from coaches.models import Coach
-
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from shop.models import Refferral, Affilliate
+from affiliates.models import Referral, Affiliate
 
 class CustomUserCreationForm(UserCreationForm):
     email = forms.EmailField(required=True, widget=forms.EmailInput(attrs={'placeholder': 'Enter your email'}))
@@ -29,7 +28,7 @@ class CustomUserCreationForm(UserCreationForm):
         """Validate referral code if provided."""
         referral_code = self.cleaned_data.get("referral_code")
         if referral_code:
-            if not Refferral.objects.filter(referral_code=referral_code, status="Pending").exists():
+            if not Referral.objects.filter(referral_code=referral_code, status="Pending").exists():
                 raise forms.ValidationError("Invalid referral code.")
         return referral_code
 
@@ -46,11 +45,11 @@ class CustomUserCreationForm(UserCreationForm):
             referral_code = self.cleaned_data.get("referral_code")
             if referral_code:
                 try:
-                    referral = Refferral.objects.get(referral_code=referral_code, status="Pending")
+                    referral = Referral.objects.get(referral_code=referral_code, status="Pending")
                     referral.referred_user = user
                     referral.status = "Joined"
                     referral.save()
-                except Refferral.DoesNotExist:
+                except Referral.DoesNotExist:
                     pass  # Ignore if referral doesn't exist (shouldn't happen due to validation)
 
         return user

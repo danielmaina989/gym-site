@@ -10,7 +10,8 @@ import json
 from django.contrib import messages
 from django.views import View
 from django.db import transaction
-from shop.models import Order, Refferral
+from shop.models import Order
+from affiliates.models import Referral
 from decimal import Decimal
 from django.contrib.auth.mixins import LoginRequiredMixin
 from members.models import  Profile
@@ -166,7 +167,7 @@ class CheckoutView(LoginRequiredMixin, View):
             order = Order.objects.create(user=request.user, total_price=total_price)
 
             # ✅ Apply referral commission (5% of total purchase)
-            referral = Refferral.objects.filter(referred_user=request.user, status="Joined").first()
+            referral = Referral.objects.filter(referred_user=request.user, status="Joined").first()
             if referral:
                 referrer = referral.referrer
                 commission = total_price * 0.05

@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block main_content %}
+<div class="container mt-5">
+    <h2 class="text-center">📋 All Affiliates</h2>
+
+    <!-- Show review button if there are pending requests -->
+    {% if pending_count > 0 %}
+        <div class="text-center mb-3">
+            <a href="{% url 'affiliates:admin_review' %}" class="btn btn-warning">
+                Review Pending Requests ({{ pending_count }}) 🔍
+            </a>
+        </div>
+    {% endif %}
+    <div class="text-center mb-3">
+        <a href="{% url 'affiliates:admin_review' %}" class="btn btn-warning">
+            Review Pending Requests ({{ pending_count }}) 🔍
+        </a>
+    </div>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Referral Code</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for affiliate in affiliates %}
+                <tr {% if affiliate.status == "Pending" %} class="table-warning" {% endif %}>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ affiliate.user.username }}</td>
+                    <td>{{ affiliate.user.email }}</td>
+                    <td>{{ affiliate.referral_code }}</td>
+                    <td>{{ affiliate.status }}</td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center text-muted">No affiliates found.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

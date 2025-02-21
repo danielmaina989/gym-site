@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block main_content %}
+<div class="container text-center">
+    <h2 class="text-warning">⏳ Your Affiliate Request is Pending</h2>
+    <p>Your application is under review. We will notify you once it's approved.</p>
+
+    <!-- Back to Home Button -->
+    <a href="{% url 'gym:index' %}" class="btn btn-primary mt-3">🏠 Back to Home</a>
+</div>
+{% endblock %}
+

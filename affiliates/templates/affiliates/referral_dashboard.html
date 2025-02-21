@@ -22,7 +22,7 @@
 
     <div class="mt-5 text-center">
         <h4>Invite a Friend 📩</h4>
-        <form method="POST" action="{% url 'shop:send_referral_email' %}">
+        <form method="POST" action="{% url 'affiliates:send_referral_email' %}">
             {% csrf_token %}
             <input type="email" name="email" class="form-control mb-3" placeholder="Enter friend's email" required>
             <button type="submit" class="btn btn-primary">Send Invitation</button>
@@ -33,7 +33,7 @@
     <div class="mt-5">
         <h4 class="text-center">Referral Management</h4>
         <p class="text-center">
-            <a href="{% url 'shop:referral_list' %}" class="btn btn-info">View All Affiliates</a>
+            <a href="{% url 'affiliates:referral_list' %}" class="btn btn-info">View All Affiliates</a>
         </p>
     </div>
     {% endif %}

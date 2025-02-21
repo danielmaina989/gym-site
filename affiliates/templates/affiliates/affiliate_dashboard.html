@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block main_content %}
+<div class="container">
+    <h2 class="text-warning">🎯 Your Affiliate Dashboard</h2>
+    <p class="lead">Earn 5% commission for every referred purchase!</p>
+
+    {% if affiliate.status == "Active" %}
+        <h4>Referral Code:</h4>
+        <p class="badge bg-primary text-white">{{ affiliate.referral_code }}</p>
+
+        <h4>Referral Link:</h4>
+        <p class="badge bg-success text-white">
+            http://yourshop.com/register/?ref={{ affiliate.referral_code }}
+        </p>
+
+        <h4>Your Earnings:</h4>
+        <p class="text-success"><strong>${{ affiliate.total_earnings }}</strong></p>
+
+        <h4>Your Referrals:</h4>
+        <ul class="list-group">
+            {% for referral in referrals %}
+                <li class="list-group-item">
+                    {{ referral.referred_user.username }} - Status: {{ referral.status }}
+                </li>
+            {% empty %}
+                <li class="list-group-item">No referrals yet. Start sharing your link!</li>
+            {% endfor %}
+        </ul>
+
+    {% else %}
+        <p class="text-warning">⚠️ Your affiliate application is still under review.</p>
+    {% endif %}
+</div>
+{% endblock %}

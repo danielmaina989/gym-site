@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block main_content %}
+<div class="container mt-5">
+    <h2 class="text-center">📋 Affiliate Approval Dashboard</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Referral Code</th>
+                <th>Status</th>
+                <th>Bank Details</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for affiliate in affiliates %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ affiliate.user.username }}</td>
+                    <td>{{ affiliate.user.email }}</td>
+                    <td>{{ affiliate.referral_code }}</td>
+                    <td>{{ affiliate.status }}</td>
+                    <td>
+                        <strong>Bank:</strong> {{ affiliate.bank_name }}<br>
+                        <strong>Account:</strong> {{ affiliate.account_number }}<br>
+                        <strong>Holder:</strong> {{ affiliate.account_holder_name }}
+                    </td>
+                    <td>
+                        {% if affiliate.status == "Pending" %}
+                            <form action="{% url 'affiliates:approve_affiliate' affiliate.pk %}" method="post" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-success btn-sm">Approve ✅</button>
+                            </form>
+                            <form action="{% url 'affiliates:reject_affiliate' affiliate.pk %}" method="post" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger btn-sm">Reject ❌</button>
+                            </form>
+                        {% else %}
+                            <span class="badge {% if affiliate.status == 'Active' %}bg-success{% else %}bg-danger{% endif %}">
+                                {{ affiliate.status }}
+                            </span>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center text-muted">No pending affiliate requests.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div class="text-center mb-3">
+        <a href="{% url 'affiliates:all_affiliates' %}" class="btn btn-warning">
+            All Affiliates 🔍
+        </a>
+    </div>
+</div>
+{% endblock %}

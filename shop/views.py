@@ -1,5 +1,5 @@
 from django.shortcuts import render,redirect
-from django.views.generic import TemplateView, ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.views.generic import TemplateView, ListView, DetailView, CreateView, UpdateView, DeleteView, View
 from .models import Product, Category
 from django.urls import reverse_lazy
 from .forms import ProductForm
@@ -11,7 +11,7 @@ from django.urls import reverse_lazy
 from django.views.generic.edit import FormView
 from django.contrib import messages
 from .forms import CSVUploadForm
-from .models import Product, Category, Order, Refferral, Affilliate
+from .models import Product, Category, Order
 from django.utils.text import slugify
 from django.db import IntegrityError
 import os
@@ -143,72 +143,4 @@ class CSVUploadView(FormView):
 
         messages.success(self.request, 'Products uploaded successfully.')
         return super().form_valid(form)
-
-
-
-@login_required
-def referral_signup(request):
-    """Allows a user to become a referee and get a referral code."""
-    if Refferral.objects.filter(referrer=request.user).exists():
-        messages.info(request, "You already have a referral code!")
-    else:
-        referral = Refferral.objects.create(referrer=request.user)
-        messages.success(request, f"Referral created! Your code: {referral.referral_code}")
-
-    return redirect("referral_dashboard")
-
-def referral_dashboard(request):
-    referral, created = Refferral.objects.get_or_create(referrer=request.user)
-    
-    return render(request, "shop/referral_dashboard.html", {
-        "referral": referral
-    })
-
-
-class AffiliateDashboardView(ListView):
-    model = Order
-    template_name = "shop/referral_list.html"
-    context_object_name = "orders"
-
-    def get_queryset(self):
-        return Order.objects.filter(referrer=self.request.user, commission_paid=False)
-
-@method_decorator(staff_member_required, name='dispatch')
-class ReferralListView(ListView):
-    model = Affilliate
-    template_name = 'shop/referral_list.html'
-    context_object_name = 'affiliates'
-
-    def get_queryset(self):
-        # Only get affiliates with their respective referrals
-        return Affilliate.objects.all()
-
-@method_decorator(staff_member_required, name='dispatch')
-class ReferralDetailView(ListView):
-    model = Refferral
-    template_name = 'shop/referral_detail.html'
-    context_object_name = 'referrals'
-
-    def get_queryset(self):
-        affiliate_id = self.kwargs.get('pk')
-        return Refferral.objects.filter(referrer__id=affiliate_id)
-    
-@login_required
-def send_referral_email(request):
-    if request.method == "POST":
-        email = request.POST.get("email")
-        referral = Refferral.objects.get(referrer=request.user)
-
-        # Send referral email (make sure your email settings are correct)
-        send_mail(
-            subject="Join Our Referral Program",
-            message=f"Use this referral link to join: {referral.referral_link}",
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[email],
-        )
-
-        messages.success(request, "Referral invitation sent!")
-        return redirect("shop:referral_dashboard")
-
-    return redirect("shop:referral_dashboard")
 

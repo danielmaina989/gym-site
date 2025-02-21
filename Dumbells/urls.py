@@ -12,6 +12,7 @@ urlpatterns = [
     path('coaches/', include('coaches.urls')),  # Coaches at /coaches/
     path('shop/', include('shop.urls')),  # Shop at /shop/
     path("cart/", include("cart.urls", namespace="cart")),
+    path("affiliates/", include("affiliates.urls", namespace="affiliates")),
 ]
 
 # Add media file serving in development

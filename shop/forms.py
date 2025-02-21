@@ -24,3 +24,5 @@ class CSVUploadForm(forms.Form):
         if not file.name.endswith('.csv'):
             raise forms.ValidationError('The file must be a CSV.')
         return file
+
+
