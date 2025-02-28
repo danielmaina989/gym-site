@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block main_content %}
+<div class="container">
+    <h2 class="text-center mt-4">Upgrade Your Membership</h2>
+    
+    <p class="text-center text-danger">
+        {% if expired_trial %}
+            Your free trial has ended. Upgrade to continue enjoying our services.
+        {% else %}
+            Select a plan to upgrade your membership.
+        {% endif %}
+    </p>
+
+    <div class="row mt-4">
+        <!-- Basic Membership -->
+        <div class="col-md-6">
+            <div class="card text-center border-success shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h5>Basic Membership</h5>
+                </div>
+                <div class="card-body">
+                    <p>✅ Full gym access</p>
+                    <p>✅ Group classes</p>
+                    <p>❌ Personal coaching</p>
+                    <p class="fw-bold">$30/month</p>
+                    <a href="{% url 'members:subscribe_membership' 'basic' %}" class="btn btn-success w-100">
+                        Upgrade to Basic
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Premium Membership -->
+        <div class="col-md-6">
+            <div class="card text-center border-danger shadow-sm">
+                <div class="card-header bg-danger text-white">
+                    <h5>Premium Membership</h5>
+                </div>
+                <div class="card-body">
+                    <p>✅ Full gym access</p>
+                    <p>✅ Group classes</p>
+                    <p>✅ Personal coaching</p>
+                    <p class="fw-bold">$50/month</p>
+                    <a href="{% url 'members:subscribe_membership' 'premium' %}" class="btn btn-danger w-100">
+                        Upgrade to Premium
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block main_content %}
+<h2>Complete Your Payment</h2>
+<p>You have selected the <strong>{{ membership.membership_type|title }}</strong> plan.</p>
+<p>The cost is <strong>${{ amount }}</strong>.</p>
+
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-success">Pay Now</button>
+</form>
+
+<p><a href="{% url 'members:upgrade_membership' %}">Cancel and choose another plan</a></p>
+{% endblock %}

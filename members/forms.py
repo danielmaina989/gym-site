@@ -27,10 +27,14 @@ class CustomUserCreationForm(UserCreationForm):
     def clean_referral_code(self):
         """Validate referral code if provided."""
         referral_code = self.cleaned_data.get("referral_code")
+
         if referral_code:
-            if not Referral.objects.filter(referral_code=referral_code, status="Pending").exists():
-                raise forms.ValidationError("Invalid referral code.")
+            # ✅ Check if an active affiliate owns this code
+            if not Affiliate.objects.filter(referral_code=referral_code, status="Active").exists():
+                raise forms.ValidationError("Invalid or inactive referral code.")
+
         return referral_code
+
 
     def save(self, commit=True):
         user = super().save(commit=False)

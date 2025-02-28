@@ -11,18 +11,13 @@ class BookingAdmin(admin.ModelAdmin):
 
 admin.site.register(Booking, BookingAdmin)
 
-class MembershipAdmin(admin.ModelAdmin):
-    list_display = ('user', 'membership_type', 'start_date', 'end_date', 'is_active_status')
-    list_filter = ('membership_type', 'start_date', 'end_date')
-    search_fields = ('user__username', 'user__email')
-    readonly_fields = ('start_date', 'end_date')
 
+class MembershipAdmin(admin.ModelAdmin):
+    list_display = ("user", "membership_type", "is_active_status")
+
+    @admin.display(boolean=True)  # ✅ This tells Django it's a boolean field
     def is_active_status(self, obj):
-        """Display the status of the membership"""
-        if obj.is_active():
-            return format_html('<span style="color: green;">Active</span>')
-        else:
-            return format_html('<span style="color: red;">Expired</span>')
-    is_active_status.short_description = 'Status'
+        return obj.status == "active"
 
 admin.site.register(Membership, MembershipAdmin)
+

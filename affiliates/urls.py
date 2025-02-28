@@ -11,8 +11,11 @@ urlpatterns = [
     path("reject/<int:pk>/", views.RejectAffiliateView.as_view(), name="reject_affiliate"),
     path("affiliate/pending/", views.AffiliatePendingView.as_view(), name="affiliate_pending"),
     path("affiliate/list/", views.AllAffiliatesView.as_view(), name="all_affiliates"),
+    path("export_csv/", views.ReferralCSVExportView.as_view(), name="export_csv"),
+    path("admin/affiliate/<int:pk>/", views.AffiliateDetailView.as_view(), name="admin_affiliate_detail"),
+    path("admin/affiliate/<int:pk>/send-email/", views.SendAffiliateEmailView.as_view(), name="send_affiliate_email"),
     path("referral/<str:referral_code>/", views.track_referral_click, name="track_referral"),
     path("send-invite/", views.send_referral_email, name="send_referral_email"),
     path('admin/referrals/', views.ReferralListView.as_view(), name='referral_list'),
-    path("admin/referrals/", views.ReferralDetailView.as_view(), name="referral_list"),
+    path("referral/<int:pk>/", views.ReferralDetailView.as_view(), name="referral_detail"),
 ]

@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.views.generic import TemplateView, ListView, View
+from django.views.generic import TemplateView, ListView, View, DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib import messages
 from django.core.mail import send_mail
@@ -9,7 +9,9 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.utils.decorators import method_decorator
 from .forms import AffiliateApplicationForm
 from shop.models import Order
-from .models import Referral, Affiliate
+from .models import Referral, Affiliate, SentReferral
+import csv
+from django.http import HttpResponse
 
 
 class AffiliateSignupView(LoginRequiredMixin, View):
@@ -187,32 +189,106 @@ class AllAffiliatesView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         """Only allow staff/admins to access this page."""
         return self.request.user.is_staff
 
+@method_decorator(staff_member_required, name="dispatch")
+class AffiliateDetailView(DetailView):
+    """Admin view to show an affiliate's details, earnings, referrals, and payment info."""
+    model = Affiliate
+    template_name = "affiliates/admin_affiliate_detail.html"
+    context_object_name = "affiliate"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["referrals"] = Referral.objects.filter(referrer=self.object)
+        return context
+
+
+@method_decorator(staff_member_required, name="dispatch")
+class ReferralCSVExportView(View):
+    """Exports affiliate earnings and referral details as CSV."""
+
+    def get(self, request, *args, **kwargs):
+        response = HttpResponse(content_type="text/csv")
+        response["Content-Disposition"] = 'attachment; filename="affiliate_earnings.csv"'
+
+        writer = csv.writer(response)
+        writer.writerow(["Affiliate Username", "Total Earnings", "Referral Code", "Referred Users", "Referral Status"])
+
+        affiliates = Affiliate.objects.all()
+        for affiliate in affiliates:
+            referrals = Referral.objects.filter(referrer=affiliate)
+            for referral in referrals:
+                writer.writerow([
+                    affiliate.user.username,
+                    affiliate.total_earnings,
+                    affiliate.referral_code,
+                    referral.referred_user.username,
+                    referral.status
+                ])
+
+        return response
+
+
+@method_decorator(staff_member_required, name="dispatch")
+class SendAffiliateEmailView(View):
+    """Admin view to send an email to an affiliate."""
+
+    def post(self, request, pk):
+        affiliate = get_object_or_404(Affiliate, pk=pk)
+        message = request.POST.get("message")
+
+        if not message:
+            messages.error(request, "Email message cannot be empty.")
+            return redirect("affiliates:admin_affiliate_detail", pk=pk)
+
+        send_mail(
+            subject="Important Update Regarding Your Affiliate Account",
+            message=message,
+            from_email="admin@fitnesscenter.com",
+            recipient_list=[affiliate.user.email],
+        )
+
+        messages.success(request, "Email sent successfully!")
+        return redirect("affiliates:admin_affiliate_detail", pk=pk)
+
+
+
 class AffiliateDashboardView(LoginRequiredMixin, ListView):
-    """Affiliate Dashboard - Shows orders linked to an affiliate."""
+    """Affiliate Dashboard - Shows orders, referrals, and pending invites."""
     model = Order
-    template_name = "affiliates/referral_orders.html"
+    template_name = "affiliates/affiliate_dashboard.html"
     context_object_name = "orders"
 
     def get_queryset(self):
-        """Only allow affiliates with ACTIVE status to access the dashboard."""
+        """Filter orders linked to the affiliate (only unpaid commissions)."""
         user = self.request.user
 
         try:
             affiliate = Affiliate.objects.get(user=user)
             if affiliate.status != "Active":
                 messages.error(self.request, "You need an active affiliate account to access the dashboard.")
-                return redirect("affiliates:affiliate_signup")  # Redirect to sign-up if not active
-            return Order.objects.filter(referrer=affiliate, commission_paid=False)
+                return Order.objects.none()
+
+            return Order.objects.filter(referrer=user, commission_paid=False)  # ✅ Orders linked to the referrer
         except Affiliate.DoesNotExist:
             messages.error(self.request, "You are not part of the affiliate program.")
-            return redirect("affiliates:affiliate_signup")
+            return Order.objects.none()
 
-    def dispatch(self, request, *args, **kwargs):
-        """Redirect non-affiliates to the signup page before loading the view"""
-        if not Affiliate.objects.filter(user=request.user).exists():
-            messages.error(request, "You must sign up as an affiliate first.")
-            return redirect("affiliates:affiliate_signup")
-        return super().dispatch(request, *args, **kwargs)
+    def get_context_data(self, **kwargs):
+        """Pass affiliate data, referrals, and pending invites to the template."""
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+
+        try:
+            affiliate = Affiliate.objects.get(user=user)
+            context["affiliate"] = affiliate  # ✅ Pass affiliate object
+            context["referrals"] = Referral.objects.filter(referrer=affiliate)  # ✅ Registered referrals
+            context["pending_invites"] = SentReferral.objects.filter(affiliate=affiliate, registered=False)  # ✅ Pending invites
+        except Affiliate.DoesNotExist:
+            context["affiliate"] = None
+            context["referrals"] = []
+            context["pending_invites"] = []
+
+        return context
 
 
 @method_decorator(staff_member_required, name='dispatch')
@@ -221,35 +297,62 @@ class ReferralListView(ListView):
     template_name = "affiliates/referral_list.html"
     context_object_name = "affiliates"
 
-@method_decorator(staff_member_required, name='dispatch')
-class ReferralDetailView(ListView):
+
+class ReferralDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
+    """View to show details of a specific referral."""
     model = Referral
     template_name = "affiliates/referral_detail.html"
-    context_object_name = "referrals"
+    context_object_name = "referral"
+
+    def test_func(self):
+        """Ensure the user is an active affiliate."""
+        return Affiliate.objects.filter(user=self.request.user, status="Active").exists()
 
     def get_queryset(self):
-        affiliate_id = self.kwargs.get("pk")
-        return Referral.objects.filter(referrer__id=affiliate_id)
+        """Ensure the affiliate can only view their own referrals."""
+        return Referral.objects.filter(referrer__user=self.request.user)
 
+
+from django.contrib.auth.models import User
+from django.core.mail import send_mail
+from django.contrib import messages
+from django.shortcuts import redirect
+from django.utils.timezone import now
+from .models import SentReferral, Affiliate, Referral
 
 def send_referral_email(request):
-    """Allows affiliates to send referral invitations via email."""
+    """Sends referral email, ensuring the email is not already referred or registered."""
     if request.method == "POST":
         email = request.POST.get("email")
+        user = request.user
+
         try:
-            affiliate = Affiliate.objects.get(user=request.user)
-            referral_link = f"http://127.0.0.1:8000/register/?ref={affiliate.referral_code}"
-
-            send_mail(
-                subject="Join Our Affiliate Program!",
-                message=f"Hey! Join our referral program and earn commissions. Sign up using this link: {referral_link}",
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=[email],
-            )
-
-            messages.success(request, "Referral invitation sent!")
+            affiliate = Affiliate.objects.get(user=user)
         except Affiliate.DoesNotExist:
-            messages.error(request, "You are not part of the affiliate program.")
+            messages.error(request, "You are not an affiliate.")
+            return redirect("affiliates:affiliate_dashboard")
 
-    return redirect("affiliates:affiliate_dashboard")
+        # ✅ 1. Check if the email belongs to an existing user
+        if User.objects.filter(email=email).exists():
+            messages.warning(request, f"{email} is already registered.")
+            return redirect("affiliates:affiliate_dashboard")
 
+        # ✅ 2. Check if this affiliate has already referred this email
+        if SentReferral.objects.filter(email=email, affiliate=affiliate).exists():
+            messages.warning(request, f"{email} has already been invited.")
+            return redirect("affiliates:affiliate_dashboard")
+
+        # ✅ 3. Save the email in SentReferral
+        SentReferral.objects.create(email=email, affiliate=affiliate, sent_at=now(), registered=False)
+
+        # ✅ 4. Send the referral email
+        send_mail(
+            subject="Join Our Fitness Center - Get Started!",
+            message=f"Hello!\n\n{user.username} invited you to join FitnessCenter. Sign up using this link: https://fitnesscenter.com/register/?ref={affiliate.referral_code}",
+            from_email="noreply@fitnesscenter.com",
+            recipient_list=[email],
+            fail_silently=False,
+        )
+
+        messages.success(request, f"Referral email sent to {email}.")
+        return redirect("affiliates:affiliate_dashboard")

@@ -67,6 +67,8 @@ class Booking(models.Model):
     def __str__(self):
         return f"Booking for {self.service.name} with {self.coach.name} on {self.session_date} at {self.training_time}"
     
+from django.utils.timezone import now
+
 class Membership(models.Model):
     MEMBERSHIP_CHOICES = [
         ('trial', 'Trial'),
@@ -74,14 +76,22 @@ class Membership(models.Model):
         ('premium', 'Premium'),
     ]
 
+    STATUS_CHOICES = [
+        ("pending", "Pending"),
+        ("active", "Active"),
+        ("expired", "Expired"),
+    ]
+
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     email = models.EmailField(max_length=255, blank=True, null=True)
     full_name = models.CharField(max_length=255, blank=True, null=True)
     phone_number = models.CharField(max_length=20, blank=True, null=True)
     membership_type = models.CharField(max_length=10, choices=MEMBERSHIP_CHOICES, default='trial')
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default="pending")
     start_date = models.DateField(auto_now_add=True)
     end_date = models.DateField(null=True, blank=True)
 
+    @property
     def is_active(self):
         """Check if the membership is still valid"""
-        return self.end_date and self.end_date >= timezone.now().date()
+        return self.end_date and self.end_date > now().date()

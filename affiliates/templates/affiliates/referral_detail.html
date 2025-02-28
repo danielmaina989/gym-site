@@ -1,32 +1,27 @@
 {% extends "base.html" %}
 
 {% block main_content %}
-<div class="container">
-    <h2 class="text-warning">📋 Referral Details</h2>
+<div class="container my-5">
+    <h2 class="text-warning text-center">👤 Referral Details</h2>
+    
+    <div class="card shadow p-4">
+        <h4>👥 Referred User:</h4>
+        <p class="text-dark">{{ referral.referred_user.username }}</p>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Referred User</th>
-                <th>Email</th>
-                <th>Joined Date</th>
-                <th>Status</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for referral in referrals %}
-                <tr>
-                    <td>{{ referral.referred_user.username }}</td>
-                    <td>{{ referral.referred_user.email }}</td>
-                    <td>{{ referral.referred_user.date_joined }}</td>
-                    <td>{{ referral.status }}</td>
-                </tr>
-            {% empty %}
-                <tr>
-                    <td colspan="4" class="text-center">No referrals yet.</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+        <h4>📅 Date Joined:</h4>
+        <p class="text-dark">{{ referral.referred_user.date_joined }}</p>
+
+        <h4>📌 Referral Status:</h4>
+        <p class="badge {% if referral.status == 'Completed' %} bg-success {% else %} bg-warning {% endif %} px-3 py-2">
+            {{ referral.status }}
+        </p>
+
+        <h4>💰 Commission Earned:</h4>
+        <p class="text-success"><strong>${{ referral.commission_earned }}</strong></p>
+
+        <a href="{% url 'affiliates:affiliate_dashboard' %}" class="btn btn-secondary mt-3">
+            Back to Dashboard
+        </a>
+    </div>
 </div>
 {% endblock %}

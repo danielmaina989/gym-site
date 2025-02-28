@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 import uuid
+from django.core.mail import send_mail
 
 # Create your models here.
 class Affiliate(models.Model):
@@ -48,8 +49,23 @@ class Affiliate(models.Model):
         """Method to update the earnings for an affiliate."""
         self.total_earnings += amount
         self.save()
+    def save(self, *args, **kwargs):
+        """Send an email if total earnings increase."""
+        if self.pk:
+            old_earnings = Affiliate.objects.get(pk=self.pk).total_earnings
+            if self.total_earnings > old_earnings:
+                self.send_earning_notification()
+        
+        super().save(*args, **kwargs)
 
-
+    def send_earning_notification(self):
+        """Send an email to the affiliate when earnings are updated."""
+        send_mail(
+            subject="🎉 You Earned a New Commission!",
+            message=f"Congratulations {self.user.username},\n\nYou just earned a commission! Your new balance is ${self.total_earnings}.",
+            from_email="admin@fitnesscenter.com",
+            recipient_list=[self.user.email],
+        )
 
 
 class Referral(models.Model):
@@ -77,3 +93,13 @@ class Referral(models.Model):
 
     def __str__(self):
         return f"{self.referrer.user.username} → {self.referred_user.username} ({self.status})"
+
+
+class SentReferral(models.Model):
+    affiliate = models.ForeignKey("Affiliate", on_delete=models.CASCADE, related_name="sent_referrals")
+    email = models.EmailField(unique=True)
+    sent_at = models.DateTimeField(auto_now_add=True)
+    registered = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.email

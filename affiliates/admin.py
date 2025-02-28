@@ -4,7 +4,7 @@ from .models import Affiliate, Referral
 # Register your models here.
 class RefferralInline(admin.TabularInline):
     model = Referral
-    extra = 0  # Don't show extra empty forms
+    extra = 0
 
 
 @admin.register(Affiliate)

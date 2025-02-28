@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block main_content %}
+<div class="container my-5">
+    <h2 class="text-center">Reply to Review</h2>
+    
+    <div class="card p-3">
+        <h4>{{ review.name }}</h4>
+        <p class="text-muted">⭐ {{ review.rating }} / 5</p>
+        <p>{{ review.comment }}</p>
+    </div>
+
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Submit Reply</button>
+    </form>
+
+    <a href="{% url 'gym:reviews' %}" class="btn btn-secondary mt-3">Cancel</a>
+</div>
+{% endblock %}

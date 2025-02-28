@@ -181,27 +181,28 @@
             <div class="col-md-10 offset-md-1 text-center">
                 <h2 class="text-warning">💰 Earn Money with Us!</h2>
                 <p class="lead">Refer your friends and earn <strong>5% commission</strong> on every purchase they make.</p>
-                
+
                 {% if request.user.is_authenticated %}
-                    {% with request.user.affiliate as affiliate %}
+                    {% with request.user.affiliate_profile as affiliate %}  <!-- Corrected this line -->
                         {% if request.user.is_staff %}
-                            <!-- Admin/Staff: See all referrals -->
+                            <!-- Admin/Staff: See all affiliates -->
                             <a href="{% url 'affiliates:all_affiliates' %}" class="btn btn-dark btn-lg">
                                 View All Affiliates
                             </a>
                         {% elif affiliate %}
-                            <!-- Regular user with affiliate account -->
                             {% if affiliate.status == "Active" %}
+                                <!-- Active Affiliate: Show Referral Dashboard -->
                                 <a href="{% url 'affiliates:affiliate_dashboard' %}" class="btn btn-success btn-lg">
                                     Go to Referral Dashboard
                                 </a>
                                 <p class="mt-3 text-dark">
-                                    <strong>Your Referral Link:</strong> 
+                                    <strong>Your Referral Link:</strong>
                                     <span class="badge bg-primary text-white px-3 py-2">
-                                        {{ affiliate.referral_code }}
+                                        {{ affiliate.referral_link }}
                                     </span>
                                 </p>
                             {% elif affiliate.status == "Pending" %}
+                                <!-- Pending Affiliate Status -->
                                 <p class="text-warning mt-3">Your affiliate request is under review.</p>
                             {% endif %}
                         {% else %}
@@ -221,5 +222,6 @@
 </section>
 
 <hr>
+
 
 {% endblock %}

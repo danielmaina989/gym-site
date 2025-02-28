@@ -6,7 +6,7 @@ from django.urls import reverse_lazy
 from django.views import View
 from .models import Review, Service
 from gym_blog.models import Post
-from .forms import ReviewForm, ContactForm, ServiceForm
+from .forms import ReviewForm, ContactForm, ServiceForm, ReviewReplyForm
 from coaches.models import Coach
 from django.views.generic.edit import FormView
 from django.contrib import messages
@@ -47,6 +47,19 @@ class SubmitReviewView(CreateView):
     def form_valid(self, form):
         form.save()
         return redirect('gym:reviews')
+    
+class ReplyReviewView(UserPassesTestMixin, UpdateView):
+    model = Review
+    form_class = ReviewReplyForm
+    template_name = "gym/reply_review.html"
+
+    def form_valid(self, form):
+        review = form.save()
+        messages.success(self.request, f"Reply added to {review.name}'s review!")
+        return redirect('gym:reviews')
+
+    def test_func(self):
+        return self.request.user.is_staff
 
 class UpdateReviewView(UserPassesTestMixin, UpdateView):
     model = Review

@@ -7,6 +7,14 @@ class ReviewForm(forms.ModelForm):
         model = Review
         fields = ['name', 'rating', 'comment']
 
+class ReviewReplyForm(forms.ModelForm):
+    class Meta:
+        model = Review
+        fields = ['reply']
+        widgets = {
+            'reply': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+        }
+
 
 class ContactForm(forms.ModelForm):
     class Meta:

@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block main_content %}
+
+<div class="container my-5">
+    <h2 class="text-primary">Affiliate Details</h2>
+    <p><strong>User:</strong> {{ affiliate.user.username }}</p>
+    <p><strong>Email:</strong> {{ affiliate.user.email }}</p>
+    <p><strong>Status:</strong> <span class="badge bg-success">{{ affiliate.status }}</span></p>
+    <p><strong>Referral Code:</strong> {{ affiliate.referral_code }}</p>
+    <p><strong>Total Earnings:</strong> ${{ affiliate.total_earnings }}</p>
+
+    <h3 class="mt-4">💰 Payment Details</h3>
+    <p><strong>Payment Method:</strong> {{ affiliate.payment_method }}</p>
+    <p><strong>Bank Account:</strong> {{ affiliate.bank_account }}</p>
+    <p><strong>PayPal Email:</strong> {{ affiliate.paypal_email }}</p>
+
+    <h3 class="mt-4">👥 Referred Users</h3>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Referred User</th>
+                <th>Status</th>
+                <th>Date Referred</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for referral in referrals %}
+                <tr>
+                    <td>{{ referral.referred_user.username }}</td>
+                    <td>
+                        <span class="badge {% if referral.status == 'Completed' %}bg-success{% else %}bg-warning{% endif %}">
+                            {{ referral.status }}
+                        </span>
+                    </td>
+                    <td>{{ referral.created_at }}</td>
+                </tr>
+            {% empty %}
+                <tr><td colspan="3">No referrals yet.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h3 class="mt-4">📧 Send Email to Affiliate</h3>
+    <form method="post" action="{% url 'affiliates:send_affiliate_email' affiliate.id %}">
+        {% csrf_token %}
+        <label for="message">Message:</label>
+        <textarea name="message" id="message" class="form-control" rows="4"></textarea>
+        <button type="submit" class="btn btn-primary mt-3">Send Email</button>
+    </form>
+
+    <a href="{% url 'affiliates:all_affiliates' %}" class="btn btn-secondary mt-3">Back to Affiliates</a>
+</div>
+
+{% endblock %}

@@ -18,27 +18,26 @@
     </div>
 
     <table class="table table-striped">
-        <thead>
+        <thead class="bg-dark text-white">
             <tr>
-                <th>#</th>
-                <th>Username</th>
-                <th>Email</th>
+                <th>Affiliate</th>
+                <th>Total Earnings</th>
                 <th>Referral Code</th>
-                <th>Status</th>
+                <th>Actions</th> <!-- New column for details link -->
             </tr>
         </thead>
         <tbody>
             {% for affiliate in affiliates %}
-                <tr {% if affiliate.status == "Pending" %} class="table-warning" {% endif %}>
-                    <td>{{ forloop.counter }}</td>
-                    <td>{{ affiliate.user.username }}</td>
-                    <td>{{ affiliate.user.email }}</td>
-                    <td>{{ affiliate.referral_code }}</td>
-                    <td>{{ affiliate.status }}</td>
-                </tr>
-            {% empty %}
                 <tr>
-                    <td colspan="5" class="text-center text-muted">No affiliates found.</td>
+                    <td>{{ affiliate.user.username }}</td>
+                    <td>${{ affiliate.total_earnings }}</td>
+                    <td>{{ affiliate.referral_code }}</td>
+                    <td>
+                        <a href="{% url 'affiliates:admin_affiliate_detail' affiliate.id %}" 
+                           class="btn btn-info btn-sm">
+                            View Details
+                        </a>
+                    </td>
                 </tr>
             {% endfor %}
         </tbody>
