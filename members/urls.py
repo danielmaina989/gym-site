@@ -14,7 +14,8 @@ urlpatterns = [
     path("upgrade/", views.UpgradeMembershipView.as_view(), name="upgrade_membership"),
     path('renew_membership/', views.RenewMembershipView.as_view(), name='renew_membership'),
     path('subscribe/<str:plan_type>/', views.SubscribeMembershipView.as_view(), name='subscribe_membership'),
-    path('members/payment/<str:plan_type>/', views.PaymentView.as_view(), name='payment_page')
-
+    path("payment/<str:plan_type>/", views.PaymentView.as_view(), name="payment_page"),
+    path("payment/success/<str:plan_type>/", views.PaymentSuccessView.as_view(), name="payment_success"),
+    path("download-membership-card/", views.DownloadMembershipCardView.as_view(), name="download_membership_card"),
 ]
 

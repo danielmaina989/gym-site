@@ -4,7 +4,7 @@ from django.views.generic.edit import FormView
 from django.views.generic import TemplateView, View
 from django.urls import reverse_lazy, reverse
 from django.contrib.auth import login
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse
 from datetime import timedelta
 from .models import TrialUser, Membership, Profile
 from gym.models import Service
@@ -16,6 +16,12 @@ from django.contrib.auth.models import User
 from affiliates.models import Referral, Affiliate
 from .forms import CustomUserCreationForm, TrialUserForm, BookingForm
 import random
+import stripe
+from django.conf import settings
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
+
+
 
 # Login View
 class CustomLoginView(LoginView):
@@ -138,7 +144,7 @@ class SubscribeMembershipView(LoginRequiredMixin, View):
         """Create or update a pending membership and redirect to payment page"""
         if plan_type not in ["basic", "premium"]:
             messages.error(request, "Invalid membership type.")
-            return redirect("members:membership_page")
+            return redirect("members:payment_page", plan_type=plan_type)
 
         membership, created = Membership.objects.get_or_create(
             user=request.user,
@@ -172,8 +178,8 @@ class MembershipPageView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["membership"] = Membership.objects.filter(user=self.request.user).first()
+        context["today"] = now().date()
         return context
-
 
 
 class UpgradeMembershipView(TemplateView):
@@ -181,70 +187,132 @@ class UpgradeMembershipView(TemplateView):
 
 
 # Renew Membership View
-class RenewMembershipView(LoginRequiredMixin, View):
-    def post(self, request, *args, **kwargs):
-        """Handles membership renewal logic."""
-        membership = Membership.objects.filter(user=request.user).first()
-        
-        if membership:
-            # Keep the existing plan and extend its duration
-            extension_days = 30 if membership.membership_type == "basic" else 365
-            membership.end_date = now().date() + timedelta(days=extension_days)
-            membership.save()
-            messages.success(request, f"Your {membership.membership_type} membership has been renewed successfully!")
-        else:
-            messages.error(request, "You do not have an active membership to renew.")
-
-        return redirect("members:membership_page")
-    
-
-class PaymentView(LoginRequiredMixin, TemplateView):
-    template_name = "members/payment_page.html"
-
-    def get_context_data(self, **kwargs):
-        """Provide necessary data for the payment page"""
-        context = super().get_context_data(**kwargs)
-        plan_type = self.kwargs.get("plan_type")
-
-        membership = Membership.objects.filter(
-            user=self.request.user, membership_type=plan_type, status="pending"
-        ).first()
+class RenewMembershipView(View):
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        membership = Membership.objects.filter(user=user, status="active").first()
 
         if not membership:
-            messages.error(self.request, "No pending membership found for payment.")
+            messages.error(request, "You don't have an active membership to renew.")
             return redirect("members:membership_page")
 
-        # Pricing logic
-        prices = {"basic": 30, "premium": 50}
-        context["amount"] = prices.get(plan_type, 0)
-        context["plan_type"] = plan_type
-        context["membership"] = membership
+        # Extend the membership by **30 days** for both plans
+        membership.end_date += timedelta(days=30)
+        membership.save()
 
-        return context
+        messages.success(request, f"Your {membership.membership_type} membership has been renewed until {membership.end_date}.")
+        return redirect("members:payment_success", plan_type=membership.membership_type)
 
+class PaymentView(View):
     def post(self, request, *args, **kwargs):
-        """Mocks the payment process and updates membership status"""
+        user = request.user
         plan_type = kwargs.get("plan_type")
-        membership = Membership.objects.filter(
-            user=request.user, membership_type=plan_type, status="pending"
-        ).first()
+        prices = {"basic": 3000, "premium": 5000}  # Amount in cents (Stripe uses smallest currency unit)
 
-        if not membership:
-            messages.error(request, "No pending membership found for payment.")
+        if plan_type not in prices:
+            messages.error(request, "Invalid membership type.")
             return redirect("members:membership_page")
 
-        # ✅ Simulate payment success (Replace with real payment logic)
-        payment_success = random.choice([True, False])  # Simulate 50% chance of success
+        # Check if user already has a membership
+        existing_membership = Membership.objects.filter(user=user, status="active").first()
 
-        if payment_success:
-            # ✅ Activate Membership
-            membership.status = "active"
+        if existing_membership:
+            if existing_membership.membership_type == plan_type:
+                messages.warning(request, "You already have this membership.")
+                return redirect("members:membership_page")
+            elif existing_membership.membership_type == "basic" and plan_type == "premium":
+                messages.info(request, "You're upgrading to a premium membership.")
+            elif existing_membership.membership_type == "premium" and plan_type == "basic":
+                messages.warning(request, "You're downgrading to a basic membership. Some features may be lost.")
+
+        # Initialize Stripe
+        stripe.api_key = settings.STRIPE_SECRET_KEY
+        success_url = request.build_absolute_uri(reverse("members:payment_success", kwargs={"plan_type": plan_type}))
+        cancel_url = request.build_absolute_uri(reverse("members:membership_page"))
+
+        try:
+            session = stripe.checkout.Session.create(
+                payment_method_types=["card"],
+                line_items=[{
+                    "price_data": {
+                        "currency": "usd",
+                        "product_data": {"name": f"{plan_type.capitalize()} Membership"},
+                        "unit_amount": prices[plan_type],  # Amount in cents
+                    },
+                    "quantity": 1,
+                }],
+                mode="payment",
+                success_url=success_url,
+                cancel_url=cancel_url,
+            )
+            return redirect(session.url)
+        except stripe.error.StripeError as e:
+            messages.error(request, f"Payment error: {str(e)}")
+            return redirect("members:membership_page")
+
+
+
+class PaymentSuccessView(View):
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        plan_type = kwargs.get("plan_type")
+
+        # Check if the user already has an active membership
+        membership = Membership.objects.filter(user=user, status="active").first()
+
+        if membership:
+            if membership.membership_type == plan_type:
+                messages.info(request, "Your membership is already active.")
+            else:
+                messages.success(request, f"Membership upgraded to {plan_type}!")
+
+            # Update membership details
+            membership.membership_type = plan_type
             membership.start_date = now().date()
             membership.end_date = now().date() + timedelta(days=30 if plan_type == "basic" else 365)
             membership.save()
-
-            messages.success(request, f"Payment successful! Your {plan_type} membership is now active.")
-            return redirect("members:membership_page")
         else:
-            messages.error(request, "Payment failed. Please try again.")
-            return redirect(reverse("members:payment_page", kwargs={"plan_type": plan_type}))
+            # Create a new membership if none exists
+            membership = Membership.objects.create(
+                user=user,
+                membership_type=plan_type,
+                status="active",
+                start_date=now().date(),
+                end_date=now().date() + timedelta(days=30 if plan_type == "basic" else 365)
+            )
+            messages.success(request, f"Payment successful! Your {plan_type} membership is now active.")
+
+        # Redirect to the success page with membership details
+        return render(request, "members/payment_success.html", {"membership": membership})
+
+
+
+class DownloadMembershipCardView(View):
+    def get(self, request, *args, **kwargs):
+        user = request.user
+
+        # Get user's premium membership
+        membership = Membership.objects.filter(user=user, membership_type="premium", status="active").first()
+        if not membership:
+            return HttpResponse("You do not have an active premium membership.", status=403)
+
+        # Create the PDF response
+        response = HttpResponse(content_type="application/pdf")
+        response["Content-Disposition"] = 'attachment; filename="membership_card.pdf"'
+
+        # Generate the PDF
+        p = canvas.Canvas(response, pagesize=letter)
+        p.setFont("Helvetica-Bold", 16)
+
+        p.drawString(200, 750, "🏋️ Gym Membership Card 🏋️")
+        p.setFont("Helvetica", 12)
+        p.drawString(100, 700, f"Member Name: {user.get_full_name() or user.username}")
+        p.drawString(100, 680, f"Membership Type: {membership.membership_type.capitalize()}")
+        p.drawString(100, 660, f"Start Date: {membership.start_date}")
+        p.drawString(100, 640, f"End Date: {membership.end_date}")
+        p.drawString(100, 620, f"Status: Active ✅")
+
+        p.showPage()
+        p.save()
+
+        return response

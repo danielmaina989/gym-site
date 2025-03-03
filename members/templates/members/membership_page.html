@@ -37,61 +37,81 @@
     <div class="row mt-4">
         <!-- Free Trial -->
         <div class="col-md-4">
-            <a href="{% url 'members:trial_signup' %}" class="text-decoration-none">
-                <div class="card text-center border-primary shadow-sm">
-                    <div class="card-header bg-primary text-white">
-                        <h5>14-Day Free Trial</h5>
-                    </div>
-                    <div class="card-body">
-                        <p>✅ Full gym access</p>
-                        <p>✅ Group classes</p>
-                        <p>❌ Personal coaching</p>
-                        <button class="btn btn-primary w-100">Start Free Trial</button>
-                    </div>
+            <div class="card text-center border-primary shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5>14-Day Free Trial</h5>
                 </div>
-            </a>
+                <div class="card-body">
+                    <p>✅ Full gym access</p>
+                    <p>✅ Group classes</p>
+                    <p>❌ Personal coaching</p>
+                    <a href="{% url 'members:trial_signup' %}" class="btn btn-primary w-100">Start Free Trial</a>
+                </div>
+            </div>
         </div>
         <!-- Basic Membership -->
         <div class="col-md-4">
-            <a href="{% url 'members:subscribe_membership' 'basic' %}" class="text-decoration-none">
-                <div class="card text-center border-success shadow-sm">
-                    <div class="card-header bg-success text-white">
-                        <h5>Basic Membership</h5>
-                    </div>
-                    <div class="card-body">
-                        <p>✅ Full gym access</p>
-                        <p>✅ Group classes</p>
-                        <p>❌ Personal coaching</p>
-                        <p class="fw-bold">$30/month</p>
-                        <button class="btn btn-success w-100">Upgrade to Basic</button>
-                    </div>
+            <div class="card text-center border-success shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h5>Basic Membership</h5>
                 </div>
-            </a>
+                <div class="card-body">
+                    <p>✅ Full gym access</p>
+                    <p>✅ Group classes</p>
+                    <p>❌ Personal coaching</p>
+                    <p class="fw-bold">$30/month</p>
+
+                    <form action="{% url 'members:payment_page' plan_type='basic' %}" method="post"
+                        onsubmit="return confirmUpgrade('basic')">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-success w-100">Upgrade to Basic</button>
+                    </form>
+                </div>
+            </div>
         </div>
 
         <!-- Premium Membership -->
         <div class="col-md-4">
-            <a href="{% url 'members:subscribe_membership' 'premium' %}" class="text-decoration-none">
-                <div class="card text-center border-danger shadow-sm">
-                    <div class="card-header bg-danger text-white">
-                        <h5>Premium Membership</h5>
-                    </div>
-                    <div class="card-body">
-                        <p>✅ Full gym access</p>
-                        <p>✅ Group classes</p>
-                        <p>✅ Personal coaching</p>
-                        <p class="fw-bold">$50/month</p>
-                        <button class="btn btn-danger w-100">Upgrade to Premium</button>
-                    </div>
+            <div class="card text-center border-danger shadow-sm">
+                <div class="card-header bg-danger text-white">
+                    <h5>Premium Membership</h5>
                 </div>
-            </a>
+                <div class="card-body">
+                    <p>✅ Full gym access</p>
+                    <p>✅ Group classes</p>
+                    <p>✅ Personal coaching</p>
+                    <p class="fw-bold">$50/month</p>
+
+                    <form action="{% url 'members:payment_page' plan_type='premium' %}" method="post"
+                        onsubmit="return confirmUpgrade('premium')">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger w-100">Upgrade to Premium</button>
+                    </form>
+                </div>
+            </div>
         </div>
 
-        <!-- Renew Membership Option -->
+
         {% if membership and membership.end_date %}
+    {% if membership.end_date <= today %}
         <div class="text-center mt-4">
             <a href="{% url 'members:renew_membership' %}" class="btn btn-warning">Renew Membership</a>
         </div>
-        {% endif %}
-    </div>
-    {% endblock %}
+    {% else %}
+        <p class="text-success text-center">
+            Your membership is active until <strong>{{ membership.end_date }}</strong>.
+            <br>
+            <strong>Time left: {{ membership.end_date|timeuntil }}</strong>
+        </p>
+    {% endif %}
+{% endif %}
+
+</div>
+
+
+<script>
+    function confirmUpgrade(planType) {
+        return confirm(`Are you sure you want to switch to the ${planType} membership?`);
+    }
+</script>
+{% endblock %}
