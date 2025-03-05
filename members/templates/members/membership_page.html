@@ -1,4 +1,7 @@
 {% extends "base.html" %}
+{% load static %}
+
+
 {% block main_content %}
 <div class="container">
     <h2 class="text-center mt-4">Membership Options</h2>
@@ -33,7 +36,7 @@
     <p>You do not have an active membership. <a href="{% url 'members:trial_signup' %}">Sign up here</a>.</p>
     {% endif %}
 
-    <!-- Membership Plans -->
+
     <div class="row mt-4">
         <!-- Free Trial -->
         <div class="col-md-4">
@@ -49,6 +52,7 @@
                 </div>
             </div>
         </div>
+
         <!-- Basic Membership -->
         <div class="col-md-4">
             <div class="card text-center border-success shadow-sm">
@@ -62,7 +66,7 @@
                     <p class="fw-bold">$30/month</p>
 
                     <form action="{% url 'members:payment_page' plan_type='basic' %}" method="post"
-                        onsubmit="return confirmUpgrade('basic')">
+                        class="membership-upgrade-form" data-plan-type="basic">
                         {% csrf_token %}
                         <button type="submit" class="btn btn-success w-100">Upgrade to Basic</button>
                     </form>
@@ -83,7 +87,7 @@
                     <p class="fw-bold">$50/month</p>
 
                     <form action="{% url 'members:payment_page' plan_type='premium' %}" method="post"
-                        onsubmit="return confirmUpgrade('premium')">
+                        class="membership-upgrade-form" data-plan-type="premium">
                         {% csrf_token %}
                         <button type="submit" class="btn btn-danger w-100">Upgrade to Premium</button>
                     </form>
@@ -91,27 +95,29 @@
             </div>
         </div>
 
-
+        <!-- Renew Membership Option -->
         {% if membership and membership.end_date %}
-    {% if membership.end_date <= today %}
-        <div class="text-center mt-4">
+        {% if membership.end_date <= today %} <div class="text-center mt-4">
             <a href="{% url 'members:renew_membership' %}" class="btn btn-warning">Renew Membership</a>
-        </div>
+    </div>
     {% else %}
-        <p class="text-success text-center">
-            Your membership is active until <strong>{{ membership.end_date }}</strong>.
-            <br>
-            <strong>Time left: {{ membership.end_date|timeuntil }}</strong>
-        </p>
+    <p class="text-success text-center">
+        Your membership is active until <strong>{{ membership.end_date }}</strong>.
+        <br>
+        <strong>Time left: {{ membership.end_date|timeuntil }}</strong>
+    </p>
     {% endif %}
-{% endif %}
-
+    {% endif %}
 </div>
 
-
 <script>
-    function confirmUpgrade(planType) {
-        return confirm(`Are you sure you want to switch to the ${planType} membership?`);
-    }
+    var currentMembership = "{{ user.membership.plan_type|lower }}";  // Ensure this context variable exists
+    console.log("🟢 Current Membership from Django:", currentMembership);
 </script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="{% static 'members/js/membership.js' %}"></script>
+
+
 {% endblock %}
