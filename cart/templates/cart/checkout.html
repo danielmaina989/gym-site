@@ -1,8 +1,9 @@
-{% extends 'base.html' %}
-
-{% block title %}Checkout{% endblock %}
-
+{% extends "base.html" %}
 {% block main_content %}
-<h2>Checkout Page</h2>
-<p>Complete your order here.</p>
+<h2>Checkout</h2>
+<p>Total: ${{ total_price }}</p>
+<form action="{% url 'cart:checkout' %}" method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-primary">Proceed to Payment</button>
+</form>
 {% endblock %}

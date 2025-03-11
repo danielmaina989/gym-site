@@ -9,4 +9,7 @@ urlpatterns = [
     path("add/<int:product_id>/", views.AddToCartView.as_view(), name="cart_add"),
     path("remove/<int:product_id>/", views.RemoveFromCartView.as_view(), name="cart_remove"),
     path("checkout/", views.CheckoutView.as_view(), name="checkout"),
+    path("stripe/webhook/", views.StripeWebhookView.as_view(), name="stripe_webhook"),
+    path("checkout/success/", views.OrderSuccessView.as_view(), name="order_success")
+
 ]

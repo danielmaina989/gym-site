@@ -16,6 +16,7 @@ from django.contrib.auth.models import User
 from affiliates.models import Referral, Affiliate
 from .forms import CustomUserCreationForm, TrialUserForm, BookingForm
 import random
+from django.db import IntegrityError
 import stripe
 from django.conf import settings
 from reportlab.lib.pagesizes import letter
@@ -48,14 +49,26 @@ class RegisterView(View):
             if referral_code:
                 try:
                     affiliate = Affiliate.objects.get(referral_code=referral_code, status="Active")
-                    Referral.objects.create(
-                        referred_user=user,
-                        referrer=affiliate,
-                        referral_code=affiliate.referral_code,
-                        status="Completed"
-                    )
+                    
+                    # ✅ Check if referral already exists
+                    referral_exists = Referral.objects.filter(
+                        referred_user=user, referral_code=referral_code
+                    ).exists()
+
+                    if not referral_exists:
+                        Referral.objects.create(
+                            referred_user=user,
+                            referrer=affiliate,
+                            referral_code=affiliate.referral_code,
+                            status="Completed"
+                        )
+
                 except Affiliate.DoesNotExist:
                     messages.error(request, "Invalid or inactive referral code.")
+                    return render(request, "members/register.html", {"form": form})
+
+                except IntegrityError:
+                    messages.error(request, "This referral code is already in use.")
                     return render(request, "members/register.html", {"form": form})
 
             login(request, user)

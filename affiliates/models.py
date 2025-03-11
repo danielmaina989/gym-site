@@ -78,7 +78,7 @@ class Referral(models.Model):
 
     referrer = models.ForeignKey(Affiliate, on_delete=models.CASCADE, related_name="referrals")  # Changed to Affiliate
     referred_user = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL, related_name="referred_by")
-    referral_code = models.CharField(max_length=20, unique=True, blank=True)
+    referral_code = models.CharField(max_length=20, blank=True)
     referral_link = models.URLField(blank=True)
     status = models.CharField(max_length=10, choices=REFERRAL_STATUS, default="Pending")
     clicks = models.PositiveIntegerField(default=0)
@@ -90,9 +90,10 @@ class Referral(models.Model):
         if not self.referral_link:
             self.referral_link = f"http://127.0.0.1:8000/register/?ref={self.referral_code}"
         super().save(*args, **kwargs)
-
+        
     def __str__(self):
-        return f"{self.referrer.user.username} → {self.referred_user.username} ({self.status})"
+        referred_user_name = self.referred_user.username if self.referred_user else "N/A"
+        return f"{self.referrer.user.username} → {referred_user_name} ({self.status})"
 
 
 class SentReferral(models.Model):

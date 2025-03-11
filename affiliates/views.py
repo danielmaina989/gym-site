@@ -12,6 +12,12 @@ from shop.models import Order
 from .models import Referral, Affiliate, SentReferral
 import csv
 from django.http import HttpResponse
+from django.contrib.auth.models import User
+from django.core.mail import send_mail
+from django.contrib import messages
+from django.shortcuts import redirect
+from django.utils.timezone import now
+from .models import SentReferral, Affiliate, Referral
 
 
 class AffiliateSignupView(LoginRequiredMixin, View):
@@ -268,7 +274,8 @@ class AffiliateDashboardView(LoginRequiredMixin, ListView):
                 messages.error(self.request, "You need an active affiliate account to access the dashboard.")
                 return Order.objects.none()
 
-            return Order.objects.filter(referrer=user, commission_paid=False)  # ✅ Orders linked to the referrer
+            # ✅ Corrected: Get orders where the referrer is the affiliate
+            return Order.objects.filter(referral__referrer=affiliate, commission_paid=False)
         except Affiliate.DoesNotExist:
             messages.error(self.request, "You are not part of the affiliate program.")
             return Order.objects.none()
@@ -289,6 +296,7 @@ class AffiliateDashboardView(LoginRequiredMixin, ListView):
             context["pending_invites"] = []
 
         return context
+
 
 
 @method_decorator(staff_member_required, name='dispatch')
@@ -313,12 +321,6 @@ class ReferralDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         return Referral.objects.filter(referrer__user=self.request.user)
 
 
-from django.contrib.auth.models import User
-from django.core.mail import send_mail
-from django.contrib import messages
-from django.shortcuts import redirect
-from django.utils.timezone import now
-from .models import SentReferral, Affiliate, Referral
 
 def send_referral_email(request):
     """Sends referral email, ensuring the email is not already referred or registered."""

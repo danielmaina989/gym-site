@@ -3,7 +3,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils.text import slugify
 from decimal import Decimal
-
+from affiliates.models import Referral
 
 class Category(models.Model):
     name = models.CharField(max_length=100, unique=True)
@@ -44,8 +44,10 @@ class Order(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     paid = models.BooleanField(default=False)
-    referrer = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name="referral_orders")
-    commission_paid = models.BooleanField(default=False) 
+    referral = models.ForeignKey(Referral, on_delete=models.SET_NULL, null=True, blank=True)
+    commission_paid = models.BooleanField(default=False)
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00) 
+
     
     def __str__(self):
         return f"Order {self.id}"
@@ -53,6 +55,22 @@ class Order(models.Model):
     def calculate_commission(self):
         """Calculate the 5% commission for the referrer."""
         return self.total_amount * Decimal(0.05)
+
+    def save(self, *args, **kwargs):
+        """Automatically update affiliate earnings when order is paid."""
+        
+        # Check if the order is now paid, and commission hasn't been paid yet
+        is_paid_now = self.paid and not Order.objects.filter(pk=self.pk, paid=True).exists()
+
+        if is_paid_now and self.referral and not self.commission_paid:
+            affiliate = self.referral.referrer  # Get the affiliate who referred the buyer
+            commission = self.calculate_commission()  # Calculate 5% commission
+            
+            if affiliate:
+                affiliate.update_earnings(commission)  # ✅ Add commission to affiliate
+                self.commission_paid = True  # ✅ Mark commission as paid
+        
+        super().save(*args, **kwargs)
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="items")
