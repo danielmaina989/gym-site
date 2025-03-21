@@ -1,8 +1,31 @@
 {% extends "base.html" %}
+
 {% block main_content %}
 <div class="container text-center mt-5">
-    <h2 class="text-success">✅ Payment Successful!</h2>
-    <p>Thank you for your purchase. Your order has been processed.</p>
-    <a href="{% url 'gym:index' %}" class="btn btn-primary">Return to Home</a>
+    <div class="card shadow-lg p-4 rounded border-0" style="max-width: 600px; margin: auto; background-color: #f8f9fa;">
+        <div class="card-body">
+            <h2 class="text-success fw-bold">
+                ✅ Payment Successful!
+            </h2>
+            <p class="lead text-muted">Thank you for your purchase. Your order has been processed successfully.</p>
+            
+            {% if order_id %}
+                <div class="alert alert-info fw-bold">
+                    Order ID: <span class="text-primary">{{ order_id }}</span>
+                </div>
+                <a href="{% url 'download_receipt' order_id %}" class="btn btn-success btn-lg my-2">
+                    🧾 Download Receipt
+                </a>
+            {% else %}
+                <p class="text-danger">No receipt available.</p>
+            {% endif %}
+
+            <hr>
+
+            <a href="{% url 'gym:index' %}" class="btn btn-primary btn-lg">
+                🏠 Return to Home
+            </a>
+        </div>
+    </div>
 </div>
 {% endblock %}

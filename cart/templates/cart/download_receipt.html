@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Receipt</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .receipt-container { max-width: 600px; margin: auto; border: 1px solid #ddd; padding: 20px; }
+        h2 { text-align: center; }
+        .details { margin-bottom: 20px; }
+        .details p { margin: 5px 0; }
+        .footer { text-align: center; margin-top: 20px; font-size: 12px; color: #555; }
+    </style>
+</head>
+<body>
+    <div class="receipt-container">
+        <h2>Order Receipt</h2>
+        <hr>
+        <div class="details">
+            <p><strong>Order ID:</strong> {{ order.id }}</p>
+            <p><strong>Customer:</strong> {{ order.user.username }}</p>
+            <p><strong>Total Amount:</strong> ${{ total_price }}</p>
+            <p><strong>Date:</strong> {{ order.created|date:"F d, Y" }}</p>
+        </div>
+        <hr>
+        <div class="footer">
+            <p>Thank you for shopping with us! 🚀</p>
+        </div>
+    </div>
+</body>
+</html>

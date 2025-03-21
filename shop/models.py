@@ -38,7 +38,6 @@ class Product(models.Model):
         return self.name
     
 
-
 class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="orders")
     created = models.DateTimeField(auto_now_add=True)
@@ -46,7 +45,8 @@ class Order(models.Model):
     paid = models.BooleanField(default=False)
     referral = models.ForeignKey(Referral, on_delete=models.SET_NULL, null=True, blank=True)
     commission_paid = models.BooleanField(default=False)
-    total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00) 
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    stripe_session_id = models.CharField(max_length=255, null=True, blank=True)
 
     
     def __str__(self):
@@ -57,20 +57,18 @@ class Order(models.Model):
         return self.total_amount * Decimal(0.05)
 
     def save(self, *args, **kwargs):
-        """Automatically update affiliate earnings when order is paid."""
-        
-        # Check if the order is now paid, and commission hasn't been paid yet
-        is_paid_now = self.paid and not Order.objects.filter(pk=self.pk, paid=True).exists()
-
-        if is_paid_now and self.referral and not self.commission_paid:
-            affiliate = self.referral.referrer  # Get the affiliate who referred the buyer
-            commission = self.calculate_commission()  # Calculate 5% commission
+            """✅ Automatically update affiliate earnings when order is paid."""
             
-            if affiliate:
-                affiliate.update_earnings(commission)  # ✅ Add commission to affiliate
-                self.commission_paid = True  # ✅ Mark commission as paid
-        
-        super().save(*args, **kwargs)
+            # ✅ If order is paid and commission not given, pay it now
+            if self.paid and self.referral and not self.commission_paid:
+                affiliate = self.referral.referrer  # Get affiliate
+                commission = self.calculate_commission()  # Calculate 5% commission
+                
+                if affiliate:
+                    affiliate.update_earnings(commission)  # ✅ Pay commission
+                    self.commission_paid = True  # ✅ Mark commission as paid
+
+            super().save(*args, **kwargs)  # ✅ Save order
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="items")

@@ -17,12 +17,16 @@ from decimal import Decimal
 from django.contrib.auth.mixins import LoginRequiredMixin
 from members.models import  Profile
 import stripe
+import logging
 from django.conf import settings
 from django.urls import reverse
+from django.http import HttpResponse
+from django.template.loader import render_to_string
+from weasyprint import HTML
+import tempfile
+from django.db import transaction
+
 stripe.api_key = settings.STRIPE_SECRET_KEY  # Ensure this is set in settings.py
-
-
-
 
 @method_decorator(login_required, name='dispatch')
 class CartDetailView(View):
@@ -162,7 +166,6 @@ class CheckoutView(View):
         return render(request, "cart/checkout.html", {"cart": cart, "total_price": total_price})
 
     def post(self, request, *args, **kwargs):
-        """Process checkout by redirecting to Stripe checkout session."""
         cart = request.session.get("cart", {})
         if not cart:
             messages.error(request, "Your cart is empty!")
@@ -170,7 +173,7 @@ class CheckoutView(View):
 
         total_price = sum(item["price"] * item["quantity"] for item in cart.values())
 
-        # ✅ Create an order (Initial status: unpaid)
+        # ✅ Create an unpaid order (But don't save it yet)
         order = Order.objects.create(user=request.user, paid=False)
 
         checkout_session = stripe.checkout.Session.create(
@@ -189,16 +192,17 @@ class CheckoutView(View):
             mode="payment",
             success_url=request.build_absolute_uri(reverse("cart:order_success")) + "?session_id={CHECKOUT_SESSION_ID}",
             cancel_url=request.build_absolute_uri(reverse("cart:cart_detail")),
-            metadata={"user_id": request.user.id, "order_id": order.id},
+            metadata={"user_id": request.user.id, "order_id": order.id},  # ✅ Store order_id in metadata
         )
+        # ✅ Save session_id to the order
+        order.stripe_session_id = checkout_session.id
+        order.save()
 
         return redirect(checkout_session.url)
 
 
-
+logger = logging.getLogger(__name__)
 class StripeWebhookView(View):
-    """Handles Stripe payment confirmation via webhooks."""
-
     def post(self, request, *args, **kwargs):
         payload = request.body
         sig_header = request.headers.get("Stripe-Signature")
@@ -207,49 +211,114 @@ class StripeWebhookView(View):
         try:
             event = stripe.Webhook.construct_event(payload, sig_header, endpoint_secret)
         except stripe.error.SignatureVerificationError:
+            logger.error("🚨 Stripe signature verification failed!")
             return JsonResponse({"error": "Invalid signature"}, status=400)
+
+        logger.info("🔄 Stripe Webhook Triggered!")
 
         if event["type"] == "checkout.session.completed":
             session = event["data"]["object"]
-            user_id = session["metadata"]["user_id"]
-            user = User.objects.get(id=user_id)
+            stripe_session_id = session.get("id")
+
+            # ✅ Log full session data for debugging
+            logger.info(f"🔹 Stripe Session Data: {session}")
+
+            # ✅ Check if metadata exists
+            metadata = session.get("metadata")
+            if not metadata:
+                logger.error("🚨 No metadata found in Stripe session!")
+                return JsonResponse({"error": "Missing metadata"}, status=400)
+
+            user_id = metadata.get("user_id")
+            order_id = metadata.get("order_id")
+
+            logger.info(f"🔹 Processing payment for user_id={user_id}, order_id={order_id}, session_id={stripe_session_id}")
+
+            try:
+                user = User.objects.get(id=user_id)
+            except User.DoesNotExist:
+                logger.error(f"🚨 User with id {user_id} not found!")
+                return JsonResponse({"error": "User not found"}, status=400)
 
             with transaction.atomic():
-                # ✅ Ensure we fetch the correct referral
-                referral = Referral.objects.filter(referred_user=user, status__in=["Joined", "Completed"]).first()
+                # ✅ First, find the order by session ID (to handle Stripe retries)
+                order = Order.objects.filter(stripe_session_id=stripe_session_id).first()
 
-                # ✅ Ensure order is linked to referral
-                order = Order.objects.create(
-                    user=user,
-                    referral=referral,
-                    paid=True,
-                    commission_paid=False,  # Initially False
-                )
+                # ✅ If not found, try finding it by order ID
+                if not order:
+                    order = Order.objects.filter(id=order_id).first()
 
-                # ✅ Process commission if referral exists
-                if referral:
-                    affiliate = referral.referrer  # ✅ Fetch the referrer (Affiliate)
-                    commission = Decimal(order.calculate_commission())  # ✅ Get commission amount
+                if order:
+                    logger.info(f"✅ Found Order {order.id} (Paid={order.paid}), updating to Paid=True")
 
-                    # ✅ Update affiliate's total earnings
-                    affiliate.total_earnings += commission
-                    affiliate.save()
-
-                    # ✅ Mark order commission as paid
-                    order.commission_paid = True
+                    # ✅ Update order status
+                    order.paid = True
+                    order.stripe_session_id = stripe_session_id  # Store the latest session ID
                     order.save()
 
-                    # ✅ Update referral status to "Completed"
-                    referral.status = "Completed"
-                    referral.save()
+                    # ✅ Fetch again to confirm update
+                    order.refresh_from_db()
+                    logger.info(f"✅ Order {order.id} updated! Paid={order.paid}")
 
-                # ✅ Clear user cart
-                user.profile.cart.clear()
-                user.profile.save()
+                else:
+                    logger.warning(f"⚠️ No matching order found, creating a new one!")
+
+                    # ✅ Create a new order only if none exist
+                    order = Order.objects.create(
+                        user=user,
+                        paid=True,
+                        stripe_session_id=stripe_session_id,
+                    )
+
+                    logger.info(f"✅ New Order {order.id} created with stripe_session_id: {order.stripe_session_id}")
 
         return JsonResponse({"status": "success"}, status=200)
 
 
+logger = logging.getLogger(__name__)
 class OrderSuccessView(TemplateView):
-    """Display order success page after payment."""
     template_name = "cart/order_success.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        session_id = self.request.GET.get("session_id")
+        if session_id:
+            order = Order.objects.filter(stripe_session_id=session_id, paid=True).first()
+        else:
+            order = Order.objects.filter(user=self.request.user, paid=True).last()
+
+        if not order:
+            logger.warning(f"🚨 No order found for session_id={session_id}")
+
+            orders = Order.objects.filter(paid=True).values("id", "stripe_session_id")
+            logger.warning(f"🔍 Found orders: {list(orders)}")
+        
+        context["order_id"] = order.id if order else None
+        return context
+
+
+def download_receipt(request, order_id):
+    """Generate and download the order receipt as a PDF."""
+    order = Order.objects.get(id=order_id)
+
+    # Context for the template
+    context = {
+        "order": order,
+        "user": order.user,
+        "total_price": order.calculate_commission(),  # Assuming there's a total amount calculation method
+    }
+
+    # Render receipt template as an HTML string
+    html_string = render_to_string("download_receipt.html", context)
+
+    # Create a temporary PDF file
+    response = HttpResponse(content_type="application/pdf")
+    response["Content-Disposition"] = f'attachment; filename="receipt_{order.id}.pdf"'
+
+    with tempfile.NamedTemporaryFile(delete=True) as temp_file:
+        HTML(string=html_string).write_pdf(temp_file.name)
+        with open(temp_file.name, "rb") as pdf_file:
+            response.write(pdf_file.read())
+
+    return response

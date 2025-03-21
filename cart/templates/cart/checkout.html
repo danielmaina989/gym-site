@@ -1,9 +1,18 @@
 {% extends "base.html" %}
+
 {% block main_content %}
-<h2>Checkout</h2>
-<p>Total: ${{ total_price }}</p>
-<form action="{% url 'cart:checkout' %}" method="post">
-    {% csrf_token %}
-    <button type="submit" class="btn btn-primary">Proceed to Payment</button>
-</form>
+<div class="container mt-5">
+    <div class="card shadow-sm p-4">
+        <h2 class="text-center mb-4">Checkout</h2>
+
+        <div class="text-center">
+            <p class="h5">Total: <strong class="text-success">${{ total_price }}</strong></p>
+        </div>
+
+        <form action="{% url 'cart:checkout' %}" method="post" class="text-center mt-3">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-lg btn-primary">Proceed to Payment</button>
+        </form>
+    </div>
+</div>
 {% endblock %}
